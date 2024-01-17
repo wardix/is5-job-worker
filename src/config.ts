@@ -2,7 +2,7 @@ import { config } from 'dotenv'
 config()
 
 export const rabbitMQUrl = process.env.AMQP_URL || 'amqp://localhost'
-export const employeeSyncQueue = process.env.JOB_QUEUE || 'job'
+export const jobQueue = process.env.JOB_QUEUE || 'job'
 export const initialRabbitMQBackoffTime = Number(
   process.env.BACKOFF_TIME_INIT || 16,
 )

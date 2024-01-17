@@ -1,7 +1,7 @@
 import amqp, { Connection, Channel } from 'amqplib'
 import {
   rabbitMQUrl,
-  employeeSyncQueue,
+  jobQueue,
   initialRabbitMQBackoffTime,
 } from './config'
 import { executeJob } from './app'
@@ -35,11 +35,11 @@ export async function startRabbitMQConsumer(
   const channel: Channel = await connection.createChannel()
   channel.on('error', (err) => console.error('RabbitMQ Channel error:', err))
   channel.on('close', () => console.log('RabbitMQ Channel closed'))
-  await channel.assertQueue(employeeSyncQueue, { durable: true })
+  await channel.assertQueue(jobQueue, { durable: true })
 
-  console.log('Waiting for messages in employee sync queue...')
+  console.log('Waiting for messages in the queue...')
   channel.consume(
-    employeeSyncQueue,
+    jobQueue,
     (msg) => {
       if (msg) {
         try {
