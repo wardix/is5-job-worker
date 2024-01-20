@@ -1,13 +1,16 @@
 import {
   fetchNisEmployeePhoneNumbers,
   updateNisEmployeePhoneNumber,
+  deleteNisGraphs,
+  fetchNisGraphs,
+  findDeadGraphs,
 } from './database'
 import {
   fetchNusaworkAuthToken,
   fetchNusaworkEmployeePhoneNumbers,
 } from './api'
 
-export async function synchronizeEmployeePhoneNumbers(): Promise<void> {
+async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
   const authToken = await fetchNusaworkAuthToken()
   const nusaworkEmployeePhoneNumbers =
@@ -24,9 +27,20 @@ export async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   }
 }
 
+async function deleteDeadGraphLinks(): Promise<void> {
+  const nisGraphs = await fetchNisGraphs()
+  const deadGraphs = await findDeadGraphs(nisGraphs)
+  await deleteNisGraphs(deadGraphs)
+}
+
 export async function executeJob(jobData: any): Promise<void> {
   console.log('Executing job:', jobData)
   if (jobData.name === 'syncEmployeeHP') {
     await synchronizeEmployeePhoneNumbers()
+    return
+  }
+  if (jobData.name === 'delDeadGraphLink') {
+    await deleteDeadGraphLinks()
+    return
   }
 }

@@ -1,9 +1,5 @@
 import amqp, { Connection, Channel } from 'amqplib'
-import {
-  rabbitMQUrl,
-  jobQueue,
-  initialRabbitMQBackoffTime,
-} from './config'
+import { rabbitMQUrl, jobQueue, initialRabbitMQBackoffTime } from './config'
 import { executeJob } from './app'
 
 export async function connectToRabbitMQ(): Promise<Connection> {
