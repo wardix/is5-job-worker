@@ -30,6 +30,9 @@ async function synchronizeEmployeePhoneNumbers(): Promise<void> {
 async function deleteDeadGraphLinks(): Promise<void> {
   const nisGraphs = await fetchNisGraphs()
   const deadGraphs = await findDeadGraphs(nisGraphs)
+  if (deadGraphs.length == 0) {
+    return
+  }
   await deleteNisGraphs(deadGraphs)
 }
 
