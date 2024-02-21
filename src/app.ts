@@ -9,6 +9,7 @@ import {
   fetchNusaworkAuthToken,
   fetchNusaworkEmployeePhoneNumbers,
 } from './api'
+import logger from './logger'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
@@ -22,7 +23,7 @@ async function synchronizeEmployeePhoneNumbers(): Promise<void> {
 
     if (!nusaworkPhoneNumber || nisPhoneNumber === nusaworkPhoneNumber) continue
 
-    console.log(`${employeeId}: ${nisPhoneNumber} -> ${nusaworkPhoneNumber}`)
+    logger.info(`${employeeId}: ${nisPhoneNumber} -> ${nusaworkPhoneNumber}`)
     await updateNisEmployeePhoneNumber(employeeId, nusaworkPhoneNumber)
   }
 }
@@ -37,7 +38,7 @@ async function deleteDeadGraphLinks(): Promise<void> {
 }
 
 export async function executeJob(jobData: any): Promise<void> {
-  console.log('Executing job:', jobData)
+  logger.info(`Execute job: ${JSON.stringify(jobData)}`)
   if (jobData.name === 'syncEmployeeHP') {
     await synchronizeEmployeePhoneNumbers()
     return

@@ -15,7 +15,8 @@
     "amqplib": "^0.10.3",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
-    "mysql2": "^3.7.0"
+    "mysql2": "^3.7.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.4",

@@ -1,5 +1,6 @@
 import mysql, { Pool, RowDataPacket } from 'mysql2/promise'
 import { nisMysqlConfig, zabbixMysqlConfig } from './config'
+import logger from './logger'
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
@@ -28,13 +29,13 @@ export async function updateNisEmployeePhoneNumber(
   const sql = 'UPDATE Employee SET EmpHP = ? WHERE EmpId = ?'
   try {
     await nisMysqlPool.execute(sql, [phoneNumber, employeeId])
-    console.log(
+    logger.info(
       `Employee phone number updated successfully for employeeId: ${employeeId}`,
     )
   } catch (error) {
-    console.error(
-      `Error updating phone number for employeeId: ${employeeId}`,
-      error,
+    const errorMessage = (error as Error).message
+    logger.error(
+      `Error updating phone number for employeeId: ${employeeId} ${errorMessage}`,
     )
   }
 }
@@ -73,8 +74,9 @@ export async function deleteNisGraphs(graphIds: number[]): Promise<void> {
   const sql = `DELETE FROM CustomerServicesZabbixGraph WHERE GraphId IN (${graphIdsSet})`
   try {
     await nisMysqlPool.execute(sql)
-    console.log('Dead graphs deleted successfully')
+    logger.info('Dead graphs deleted successfully')
   } catch (error) {
-    console.error(`Error deleting dead graphs`, error)
+    const errorMessage = (error as Error).message
+    logger.error(`Error deleting dead graphs ${errorMessage}`)
   }
 }

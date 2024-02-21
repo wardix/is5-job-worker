@@ -1,4 +1,5 @@
 import { connectToRabbitMQ, startRabbitMQConsumer } from './rabbitmq'
+import logger from './logger'
 
 async function main() {
   try {
@@ -6,7 +7,8 @@ async function main() {
     process.once('SIGINT', () => connection.close())
     await startRabbitMQConsumer(connection)
   } catch (error) {
-    console.error('Error in main function:', error)
+    const errorMessage = (error as Error).message
+    logger.error(`Error in main function: ${errorMessage}`)
   }
 }
 
