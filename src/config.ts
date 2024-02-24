@@ -32,3 +32,12 @@ export const zabbixMysqlConfig = {
   connectionLimit: 10,
   queueLimit: 0,
 }
+
+export const overSpeedBlockedSubscriberMetricName =
+  process.env.OVER_SPEED_BLOCKED_SUBSCRIBER_METRIC_NAME ||
+  'over_speed_blocked_subscriber'
+export const overSpeedBlockedSubscriberMetricFilePath =
+  process.env.OVER_SPEED_BLOCKED_SUBSCRIBER_METRIC_FILE_PATH ||
+  '/tmp/metric.txt'
+export const overSpeedBlockedSubscriberThreshold =
+  process.env.OVER_SPEED_BLOCKED_SUBSCRIBER_THRESHOLD || 1000000

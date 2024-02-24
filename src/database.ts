@@ -52,6 +52,78 @@ export async function fetchNisGraphs(): Promise<number[]> {
   return rows.map((e) => +e.graphId)
 }
 
+export async function fetchBlockedSubscriberGraphs(): Promise<any> {
+  const sql =
+    'SELECT cs.CustAccName AS acc, cs.CustServId AS csid,' +
+    ' cszg.GraphId AS graphId' +
+    ' FROM CustomerServicesZabbixGraph cszg' +
+    ' LEFT JOIN CustomerServices cs ON cszg.CustServId = cs.CustServId' +
+    ' LEFT JOIN Customer c ON c.CustId = cs.CustId' +
+    " WHERE cs.CustStatus = 'BL' AND c.BranchId = '020'" +
+    ' ORDER BY cs.CustServId, cszg.Id'
+
+  const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(sql)
+  const subscribersGraphMap: any = {}
+  rows.forEach((e) => {
+    const { acc, csid, graphId } = e
+    if (!(graphId in subscribersGraphMap)) {
+      subscribersGraphMap[graphId] = []
+    }
+    subscribersGraphMap[graphId].push({ csid, acc })
+  })
+
+  return subscribersGraphMap
+}
+
+export async function findOverSpeedGraphs(
+  graphIds: number[],
+  speedThreshold: number,
+): Promise<number[]> {
+  const graphIdsSet = graphIds.map((e) => `${e}`).join(',')
+  let sql =
+    'SELECT graphid AS graphId, itemid AS itemId FROM graphs_items' +
+    ` WHERE graphid IN (${graphIdsSet})`
+  const [rows] = await zabbixMysqlPool.execute<RowDataPacket[]>(sql)
+  const graphsItemMap = new Map<number, number[]>()
+  const itemIds = new Set<number>()
+  rows.forEach((e) => {
+    const { graphId, itemId } = e
+    if (!itemIds.has(itemId)) {
+      itemIds.add(itemId)
+    }
+    if (!graphsItemMap.has(itemId)) {
+      graphsItemMap.set(itemId, [])
+    }
+
+    const tmpGraphIds = graphsItemMap.get(itemId) as number[]
+    tmpGraphIds.push(graphId)
+    graphsItemMap.set(itemId, tmpGraphIds)
+  })
+
+  const itemIdsSet = Array.from(itemIds)
+    .map((e) => `${e}`)
+    .join(',')
+  const now = Math.floor(Date.now() / 1000)
+  const startPeriod = now - 14400
+  sql =
+    'SELECT DISTINCT(itemid) AS itemId FROM history_uint' +
+    ` WHERE clock > ${startPeriod} AND value > ${speedThreshold}` +
+    ` AND itemid IN (${itemIdsSet})`
+  const [itemRows] = await zabbixMysqlPool.execute<RowDataPacket[]>(sql)
+  const overSpeedGraphs = new Set<number>()
+  itemRows.forEach(({ itemId }) => {
+    const graphs = graphsItemMap.get(itemId) as number[]
+    for (const graphId of graphs) {
+      if (overSpeedGraphs.has(graphId)) {
+        continue
+      }
+      overSpeedGraphs.add(graphId)
+    }
+  })
+
+  return Array.from(overSpeedGraphs)
+}
+
 export async function findDeadGraphs(graphIds: number[]): Promise<number[]> {
   const graphIdsSet = graphIds.map((e) => `${e}`).join(',')
 
