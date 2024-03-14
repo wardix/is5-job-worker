@@ -94,6 +94,10 @@ export async function getContactDetail(phone: string): Promise<any> {
     addresses: [],
   }
 
+  if (phone.length < 10) {
+    return {}
+  }
+
   const sql =
     'SELECT name, custId AS customerId FROM sms_phonebook' +
     ` WHERE phone LIKE '%${phone}'` +
