@@ -3,6 +3,9 @@ import {
   nusaworkAuthTokenApiUrl,
   nusaworkAuthTokenApiKey,
   nusaworkEmployeeApiUrl,
+  nusacontactSyncContactApiUrl,
+  nusacontactApiKey,
+  nusacontactSyncContactMaxAttempts,
 } from './config'
 import { formatPhoneNumber } from './utils'
 
@@ -44,4 +47,42 @@ export async function fetchNusaworkEmployeePhoneNumbers(
     }
   })
   return employeePhoneNumbers
+}
+
+export async function syncNusacontactContact(data: any): Promise<void> {
+  if (!nusacontactSyncContactApiUrl) {
+    return
+  }
+  let attempt = 0
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms))
+  while (attempt < +nusacontactSyncContactMaxAttempts) {
+    try {
+      await axios.post(nusacontactSyncContactApiUrl, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': nusacontactApiKey,
+        },
+      })
+      break
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const statusCode = error.response?.status
+        if (statusCode && statusCode >= 400 && statusCode < 500) {
+          attempt++
+          if (attempt < +nusacontactSyncContactMaxAttempts) {
+            await delay(1000)
+          } else {
+            // max retry reached
+          }
+        } else {
+          // non retryable error occurred
+          break
+        }
+      } else {
+        // non axios error
+        break
+      }
+    }
+  }
 }

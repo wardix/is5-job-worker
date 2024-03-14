@@ -75,6 +75,80 @@ export async function fetchBlockedSubscriberGraphs(): Promise<any> {
   return subscribersGraphMap
 }
 
+export async function getContactDetail(phone: string): Promise<any> {
+  const contact: {
+    name: string
+    ids: string[]
+    branches: string[]
+    companies: any[]
+    services: any[]
+    accounts: any[]
+    addresses: any[]
+  } = {
+    name: '',
+    ids: [],
+    branches: [],
+    companies: [],
+    services: [],
+    accounts: [],
+    addresses: [],
+  }
+
+  const sql =
+    'SELECT name, custId AS customerId FROM sms_phonebook' +
+    ` WHERE phone LIKE '%${phone}'` +
+    ' AND custId IS NOT NULL ORDER BY insertTime DESC'
+  const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(sql)
+  rows.forEach(({ name, customerId }) => {
+    if (contact.name === '') {
+      contact.name = name
+    }
+    contact.ids.push(customerId)
+  })
+
+  if (contact.name === '') {
+    return {}
+  }
+  if (contact.ids.length == 0) {
+    return {}
+  }
+
+  const customerIdsSet = contact.ids.map((e) => `'${e}'`).join(',')
+  const sql2 =
+    'SELECT CustId AS customerId, CustCompany AS company,' +
+    ' IFNULL(DisplayBranchId, BranchId) AS branch' +
+    ` FROM Customer WHERE CustId IN (${customerIdsSet})`
+  const [rows2] = await nisMysqlPool.execute<RowDataPacket[]>(sql2)
+  rows2.forEach(({ customerId, company, branch }) => {
+    const realCompany = company.trim()
+    if (realCompany) {
+      contact.companies.push({ id: customerId, name: realCompany })
+    }
+    if (contact.branches.includes(branch)) {
+      return
+    }
+    contact.branches.push(branch)
+  })
+
+  const sql3 =
+    'SELECT cs.CustServId AS subscriptionId, s.ServiceType AS service,' +
+    ' cs.CustAccName AS account, cs.installation_address AS address' +
+    ' FROM CustomerServices cs' +
+    ' LEFT JOIN Services s ON cs.ServiceId = s.ServiceId' +
+    ' LEFT JOIN Customer c ON cs.CustId = c.CustId' +
+    ` WHERE cs.CustId IN (${customerIdsSet}) AND cs.CustStatus != 'NA'`
+  const [rows3] = await nisMysqlPool.execute<RowDataPacket[]>(sql3)
+  rows3.forEach(({ subscriptionId, service, account, address }) => {
+    const realAddress = address.trim().replace(/\s+/g, ' ')
+    if (realAddress) {
+      contact.addresses.push({ id: subscriptionId, name: realAddress })
+    }
+    contact.services.push({ id: subscriptionId, name: service })
+    contact.accounts.push({ id: subscriptionId, name: account.trim() })
+  })
+  return contact
+}
+
 export async function findOverSpeedGraphs(
   graphIds: number[],
   speedThreshold: number,

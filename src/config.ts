@@ -41,3 +41,9 @@ export const overSpeedBlockedSubscriberMetricFilePath =
   '/tmp/metric.txt'
 export const overSpeedBlockedSubscriberThreshold =
   process.env.OVER_SPEED_BLOCKED_SUBSCRIBER_THRESHOLD || 1000000
+
+export const nusacontactSyncContactApiUrl =
+  process.env.NUSACONTACT_SYNC_CONTACT_API_URL || ''
+export const nusacontactApiKey = process.env.NUSACONTACT_API_KEY || ''
+export const nusacontactSyncContactMaxAttempts =
+  process.env.NUSACONTACT_SYNC_CONTACT_MAX_ATTEMPTS || '8'

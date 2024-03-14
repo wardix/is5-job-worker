@@ -8,10 +8,12 @@ import {
   findDeadGraphs,
   fetchBlockedSubscriberGraphs,
   findOverSpeedGraphs,
+  getContactDetail,
 } from './database'
 import {
   fetchNusaworkAuthToken,
   fetchNusaworkEmployeePhoneNumbers,
+  syncNusacontactContact,
 } from './api'
 import logger from './logger'
 import {
@@ -19,6 +21,7 @@ import {
   overSpeedBlockedSubscriberMetricName,
   overSpeedBlockedSubscriberThreshold,
 } from './config'
+import { formatContact } from './nusacontact'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
@@ -86,6 +89,15 @@ async function generateOverSpeedBlockedSubscriberMetrics(): Promise<void> {
   fs.rmdirSync(tempDirectoryPath)
 }
 
+async function syncNusacontactCustomer(phone: string): Promise<void> {
+  const contact = await getContactDetail(phone)
+  if (JSON.stringify(contact) === '{}') {
+    return
+  }
+  const formattedContact = formatContact(phone, contact)
+  await syncNusacontactContact(formattedContact)
+}
+
 export async function executeJob(jobData: any): Promise<void> {
   logger.info(`Execute job: ${JSON.stringify(jobData)}`)
   if (jobData.name === 'syncEmployeeHP') {
@@ -98,6 +110,10 @@ export async function executeJob(jobData: any): Promise<void> {
   }
   if (jobData.name === 'genOverSpeedBlockedSubscriberMetrics') {
     await generateOverSpeedBlockedSubscriberMetrics()
+    return
+  }
+  if (jobData.name === 'syncNusacontactCustomer') {
+    await syncNusacontactCustomer(jobData.phone as string)
     return
   }
 }
