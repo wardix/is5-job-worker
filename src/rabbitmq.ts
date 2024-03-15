@@ -42,11 +42,11 @@ export async function startRabbitMQConsumer(
   logger.info('Waiting for messages in the queue...')
   channel.consume(
     jobQueue,
-    (msg) => {
+    async (msg) => {
       if (msg) {
         try {
           const jobData = JSON.parse(msg.content.toString())
-          executeJob(jobData)
+          await executeJob(jobData)
           channel.ack(msg)
         } catch (error) {
           const errorMessage = (error as Error).message
