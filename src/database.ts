@@ -136,7 +136,7 @@ export async function getContactDetail(phone: string): Promise<any> {
 
   const sql3 =
     'SELECT cs.CustServId AS subscriptionId, s.ServiceType AS service,' +
-    ' cs.CustAccName AS account, cs.installation_address AS address' +
+    ' cs.CustAccName AS account, IFNULL(cs.installation_address, "") AS address' +
     ' FROM CustomerServices cs' +
     ' LEFT JOIN Services s ON cs.ServiceId = s.ServiceId' +
     ' LEFT JOIN Customer c ON cs.CustId = c.CustId' +
