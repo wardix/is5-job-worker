@@ -6,8 +6,22 @@ import {
   nusacontactSyncContactApiUrl,
   nusacontactApiKey,
   nusacontactSyncContactMaxAttempts,
+  waNotificationApiUrl,
+  waNotificationApiKey,
 } from './config'
 import { formatPhoneNumber } from './utils'
+
+export async function sendWaNotification({
+  to,
+  msg,
+}: { to: string; msg: string }): Promise<void> {
+  const payload = { to, type: 'text', msg }
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Api-Key': waNotificationApiKey,
+  }
+  await axios.post(waNotificationApiUrl, payload, { headers })
+}
 
 export async function fetchNusaworkAuthToken(): Promise<string> {
   const response = await axios.get<{ token: string }>(nusaworkAuthTokenApiUrl, {
