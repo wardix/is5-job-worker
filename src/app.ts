@@ -119,7 +119,8 @@ export async function executeJob(jobData: any): Promise<void> {
   }
 
   if (jobData.name === 'fetchEngineerTickets') {
-    await processEngineerTickets()
+    const phoneNumber = jobData.notify as string
+    await processEngineerTickets(phoneNumber)
     return
   }
 }

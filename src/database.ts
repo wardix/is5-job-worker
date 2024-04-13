@@ -1,7 +1,11 @@
 import mysql, { Pool, RowDataPacket } from 'mysql2/promise'
 import { dbzMysqlConfig, nisMysqlConfig, zabbixMysqlConfig } from './config'
 import logger from './logger'
-import { fetchNusaworkPresentEngineers, fetchVisitCards } from './api'
+import {
+  fetchNusaworkPresentEngineers,
+  fetchVisitCards,
+  sendWaNotification,
+} from './api'
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
@@ -366,7 +370,9 @@ export async function processTiketData(
   return engineerMap
 }
 
-export async function processEngineerTickets(): Promise<void> {
+export async function processEngineerTickets(
+  phoneNumber: string,
+): Promise<void> {
   const startTime = new Date()
   startTime.setHours(8, 30, 0, 0)
 
@@ -521,6 +527,9 @@ export async function processEngineerTickets(): Promise<void> {
     }
     return b.idle - a.idle
   })
+
+  let message = ''
+
   for (const { employeeId, idle, tickets } of orderedEngineers) {
     const name =
       employeeId in employeeNickname
@@ -528,12 +537,14 @@ export async function processEngineerTickets(): Promise<void> {
         : `${employeeId} ${engineerMap[employeeId].name}`
     if (idle) {
       if (tickets.length > 0) {
-        console.log(`*${name}* - ${tickets.join(', ')}`)
+        message += `*${name}* - ${tickets.join(', ')}\n`
       } else {
-        console.log(`*${name}*`)
+        message += `*${name}*\n`
       }
     } else {
-      console.log(`${name} - ${tickets.join(', ')}`)
+      message += `${name} - ${tickets.join(', ')}\n`
     }
   }
+
+  sendWaNotification({ to: phoneNumber, msg: message })
 }
