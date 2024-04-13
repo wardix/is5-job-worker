@@ -6,6 +6,9 @@ import {
   nusacontactSyncContactApiUrl,
   nusacontactApiKey,
   nusacontactSyncContactMaxAttempts,
+  nusaworkAttendanceApiUrl,
+  visitCardSummaryApiUrl,
+  visitCardToken,
 } from './config'
 import { formatPhoneNumber } from './utils'
 
@@ -85,4 +88,54 @@ export async function syncNusacontactContact(data: any): Promise<void> {
       }
     }
   }
+}
+
+export async function fetchNusaworkPresentEngineers(
+  engineerMap: any,
+): Promise<string[]> {
+  const presentEngineers: string[] = []
+
+  const nusaworkToken = await fetchNusaworkAuthToken()
+  const nusaworkResponse = await axios.get(nusaworkAttendanceApiUrl, {
+    headers: {
+      Authorization: `Bearer ${nusaworkToken}`,
+      Accept: 'application/json',
+    },
+    params: {
+      status: 'working,clock_out',
+      id_branch: '5',
+      id_department: '31',
+      sort_by: 'name',
+      order_by: 'asc',
+    },
+  })
+
+  const nusaworkPresentEngineers = nusaworkResponse.data.data
+
+  for (const employeeId in engineerMap) {
+    if (
+      nusaworkPresentEngineers.some((e: any) => e.employee_id === employeeId)
+    ) {
+      presentEngineers.push(employeeId)
+    }
+  }
+
+  return presentEngineers
+}
+
+export async function fetchVisitCards(): Promise<any> {
+  const visitcardResponse = await axios.get(visitCardSummaryApiUrl, {
+    headers: {
+      Authorization: `Bearer ${visitCardToken}`,
+      Accept: 'application/json',
+    },
+    params: {
+      status: '0,1,2,3',
+      row: 'all',
+    },
+  })
+
+  const visitcardCurrentUserTickets = visitcardResponse.data._embedded
+
+  return visitcardCurrentUserTickets
 }

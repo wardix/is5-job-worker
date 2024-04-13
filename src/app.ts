@@ -9,6 +9,7 @@ import {
   fetchBlockedSubscriberGraphs,
   findOverSpeedGraphs,
   getContactDetail,
+  processEngineerTickets,
 } from './database'
 import {
   fetchNusaworkAuthToken,
@@ -114,6 +115,11 @@ export async function executeJob(jobData: any): Promise<void> {
   }
   if (jobData.name === 'syncNusacontactCustomer') {
     await syncNusacontactCustomer(jobData.phone as string)
+    return
+  }
+
+  if (jobData.name === 'fetchEngineerTickets') {
+    await processEngineerTickets()
     return
   }
 }

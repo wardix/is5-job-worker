@@ -10,6 +10,12 @@ export const nusaworkAuthTokenApiUrl = process.env.NUSAWORK_TOKEN_API_URL || ''
 export const nusaworkAuthTokenApiKey = process.env.NUSAWORK_TOKEN_API_KEY || ''
 export const nusaworkEmployeeApiUrl =
   process.env.NUSAWORK_EMPLOYEE_API_URL || ''
+export const nusaworkAttendanceApiUrl =
+  process.env.NUSAWORK_ATTENDANCE_API_URL || ''
+
+export const visitCardSummaryApiUrl =
+  process.env.VISITCARD_SUMMARY_API_URL || ''
+export const visitCardToken = process.env.VISITCARD_TOKEN || ''
 
 export const nisMysqlConfig = {
   host: process.env.NIS_MYSQL_HOST,
@@ -28,6 +34,17 @@ export const zabbixMysqlConfig = {
   user: process.env.ZABBIX_MYSQL_USER,
   password: process.env.ZABBIX_MYSQL_PASSWORD,
   database: process.env.ZABBIX_MYSQL_DB,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+}
+
+export const dbzMysqlConfig = {
+  host: process.env.DBZ_MYSQL_HOST,
+  port: +(process.env.DBZ_MYSQL_PORT || 3306),
+  user: process.env.DBZ_MYSQL_USER,
+  password: process.env.DBZ_MYSQL_PASSWORD,
+  database: process.env.DBZ_MYSQL_DB,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
