@@ -14,6 +14,8 @@ import {
 import {
   fetchNusaworkAuthToken,
   fetchNusaworkEmployeePhoneNumbers,
+  sendWaNotification,
+  submitSilenceAlert,
   syncNusacontactContact,
 } from './api'
 import logger from './logger'
@@ -23,6 +25,7 @@ import {
   overSpeedBlockedSubscriberThreshold,
 } from './config'
 import { formatContact } from './nusacontact'
+import { convertToSeconds, parseAttributes } from './utils'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
@@ -99,6 +102,47 @@ async function syncNusacontactCustomer(phone: string): Promise<void> {
   await syncNusacontactContact(formattedContact)
 }
 
+async function silenceAlert(
+  attributes: string,
+  contact: string,
+  notify: string,
+): Promise<void> {
+  try {
+    const { duration, end, comment, ...matchers } = parseAttributes(attributes)
+    if (!comment) {
+      throw new Error("`comment' attribute is required")
+    }
+    if (duration && end) {
+      throw new Error("conflict attributes: `duration' and `end'")
+    }
+    if (!duration && !end) {
+      throw new Error("`duration' or `end' attribute is required")
+    }
+    const now = new Date()
+    const endTime = end
+      ? new Date(end)
+      : new Date(now.getTime() + convertToSeconds(duration) * 1000)
+    const silenceData: any = {
+      matchers: [],
+      startsAt: now.toISOString(),
+      endsAt: endTime.toISOString(),
+      createdBy: contact,
+      comment,
+    }
+    for (const m in matchers) {
+      silenceData.matchers.push({
+        name: m,
+        value: matchers[m],
+        isRegex: false,
+      })
+    }
+    await submitSilenceAlert(silenceData)
+    sendWaNotification({ to: notify, msg: 'silenced' })
+  } catch (error: any) {
+    sendWaNotification({ to: notify, msg: error.message })
+  }
+}
+
 export async function executeJob(jobData: any): Promise<void> {
   logger.info(`Execute job: ${JSON.stringify(jobData)}`)
   if (jobData.name === 'syncEmployeeHP') {
@@ -121,6 +165,14 @@ export async function executeJob(jobData: any): Promise<void> {
   if (jobData.name === 'fetchEngineerTickets') {
     const phoneNumber = jobData.notify as string
     await processEngineerTickets(phoneNumber)
+    return
+  }
+
+  if (jobData.name === 'silenceAlert') {
+    const attributes = jobData.attributes as string
+    const contact = jobData.contact as string
+    const notify = jobData.notify as string
+    await silenceAlert(attributes, contact, notify)
     return
   }
 }

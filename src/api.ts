@@ -11,6 +11,7 @@ import {
   visitCardToken,
   waNotificationApiUrl,
   waNotificationApiKey,
+  silenceAlertApiUrl,
 } from './config'
 import { formatPhoneNumber } from './utils'
 
@@ -155,4 +156,11 @@ export async function fetchVisitCards(): Promise<any> {
   const visitcardCurrentUserTickets = visitcardResponse.data._embedded
 
   return visitcardCurrentUserTickets
+}
+
+export async function submitSilenceAlert(data: any) {
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  await axios.post(silenceAlertApiUrl, data, { headers })
 }

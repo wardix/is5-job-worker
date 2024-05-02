@@ -20,6 +20,8 @@ export const visitCardSummaryApiUrl =
   process.env.VISITCARD_SUMMARY_API_URL || ''
 export const visitCardToken = process.env.VISITCARD_TOKEN || ''
 
+export const silenceAlertApiUrl = process.env.SILENCE_ALERT_API_URL || ''
+
 export const nisMysqlConfig = {
   host: process.env.NIS_MYSQL_HOST,
   port: +(process.env.NIS_MYSQL_PORT || 3306),
