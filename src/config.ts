@@ -1,4 +1,5 @@
 import { config } from 'dotenv'
+
 config()
 
 export const rabbitMQUrl = process.env.AMQP_URL || 'amqp://localhost'
