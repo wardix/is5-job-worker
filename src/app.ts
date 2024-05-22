@@ -144,35 +144,41 @@ async function silenceAlert(
 }
 
 export async function executeJob(jobData: any): Promise<void> {
+  // Log the job data
   logger.info(`Execute job: ${JSON.stringify(jobData)}`)
-  if (jobData.name === 'syncEmployeeHP') {
-    await synchronizeEmployeePhoneNumbers()
-    return
-  }
-  if (jobData.name === 'delDeadGraphLink') {
-    await deleteDeadGraphLinks()
-    return
-  }
-  if (jobData.name === 'genOverSpeedBlockedSubscriberMetrics') {
-    await generateOverSpeedBlockedSubscriberMetrics()
-    return
-  }
-  if (jobData.name === 'syncNusacontactCustomer') {
-    await syncNusacontactCustomer(jobData.phone as string)
-    return
-  }
 
-  if (jobData.name === 'fetchEngineerTickets') {
-    const phoneNumber = jobData.notify as string
-    await processEngineerTickets(phoneNumber)
-    return
-  }
+  // Check the job name and execute the corresponding function
+  switch (jobData.name) {
+    case 'syncEmployeeHP':
+      await synchronizeEmployeePhoneNumbers()
+      break
 
-  if (jobData.name === 'silenceAlert') {
-    const attributes = jobData.attributes as string
-    const contact = jobData.contact as string
-    const notify = jobData.notify as string
-    await silenceAlert(attributes, contact, notify)
-    return
+    case 'delDeadGraphLink':
+      await deleteDeadGraphLinks()
+      break
+
+    case 'genOverSpeedBlockedSubscriberMetrics':
+      await generateOverSpeedBlockedSubscriberMetrics()
+      break
+
+    case 'syncNusacontactCustomer':
+      await syncNusacontactCustomer(jobData.phone as string)
+      break
+
+    case 'fetchEngineerTickets':
+      await processEngineerTickets(jobData.notify as string)
+      break
+
+    case 'silenceAlert':
+      await silenceAlert(
+        jobData.attributes as string,
+        jobData.contact as string,
+        jobData.notify as string,
+      )
+      break
+
+    default:
+      logger.warn(`Unknown job name: ${jobData.name}`)
+      break
   }
 }
