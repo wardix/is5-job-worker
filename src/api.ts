@@ -1,3 +1,5 @@
+import mime from 'mime-types'
+import { promises as fs } from 'fs'
 import axios from 'axios'
 import {
   nusaworkAuthTokenApiUrl,
@@ -23,6 +25,26 @@ export async function sendWaNotification({
   msg: string
 }): Promise<void> {
   const payload = { to, type: 'text', msg }
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Api-Key': waNotificationApiKey,
+  }
+  await axios.post(waNotificationApiUrl, payload, { headers })
+}
+
+export async function sendWaNotificationMedia(
+  to: string,
+  imageFilePath: string,
+  caption: string,
+): Promise<void> {
+  const mimeType = mime.lookup(imageFilePath)
+  const data = await fs.readFile(imageFilePath)
+  const payload = {
+    to,
+    type: 'media',
+    msg: `data:${mimeType};base64,${data.toString('base64')}`,
+    options: { caption },
+  }
   const headers = {
     'Content-Type': 'application/json',
     'X-Api-Key': waNotificationApiKey,

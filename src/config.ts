@@ -70,3 +70,10 @@ export const nusacontactSyncContactApiUrl =
 export const nusacontactApiKey = process.env.NUSACONTACT_API_KEY || ''
 export const nusacontactSyncContactMaxAttempts =
   process.env.NUSACONTACT_SYNC_CONTACT_MAX_ATTEMPTS || '8'
+
+export const birthdayGiftVoucherTemplatePath =
+  process.env.BIRTHDAY_GIFT_VOUCHER_TEMPLATE_PATH || '/tmp/template.png'
+export const birthdayGiftVoucherPeriodDays =
+  process.env.BIRTHDAY_GIFT_VOUCHER_PERIOD_DAYS || 30
+export const birthdayWishes = process.env.BIRTHDAY_WISHES || 'Happy birthday'
+export const birthdayPicPhones = process.env.BIRTHDAY_PIC_PHONES || '[]'

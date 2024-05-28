@@ -26,6 +26,7 @@ import {
 } from './config'
 import { formatContact } from './nusacontact'
 import { convertToSeconds, parseAttributes } from './utils'
+import { sendGiftVoucherToBirthdayEmployees, sendNotificationNextWeekBirthdayEmployees } from './birthday'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
@@ -167,6 +168,14 @@ export async function executeJob(jobData: any): Promise<void> {
 
     case 'fetchEngineerTickets':
       await processEngineerTickets(jobData.notify as string)
+      break
+
+    case 'sendGiftVoucherToBirthdayEmployees':
+      await sendGiftVoucherToBirthdayEmployees()
+      break
+
+    case 'sendNotificationNextWeekBirthdayEmployees':
+      await sendNotificationNextWeekBirthdayEmployees()
       break
 
     case 'silenceAlert':
