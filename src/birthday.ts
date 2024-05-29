@@ -94,8 +94,7 @@ export async function sendGiftVoucherToBirthdayEmployees() {
         voucherEndPeriodDate,
       )
 
-      // FIXME:
-      // sendWaNotificationMedia(contactNo, giftOutputPath, birthdayWishes)
+      sendWaNotificationMedia(contactNo, giftOutputPath, birthdayWishes)
       for (const phone of ccPhones) {
         sendWaNotificationMedia(phone, giftOutputPath, birthdayWishes)
       }

@@ -26,7 +26,10 @@ import {
 } from './config'
 import { formatContact } from './nusacontact'
 import { convertToSeconds, parseAttributes } from './utils'
-import { sendGiftVoucherToBirthdayEmployees, sendNotificationNextWeekBirthdayEmployees } from './birthday'
+import {
+  sendGiftVoucherToBirthdayEmployees,
+  sendNotificationNextWeekBirthdayEmployees,
+} from './birthday'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
