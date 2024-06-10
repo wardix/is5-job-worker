@@ -67,7 +67,11 @@ function getEmployeesWithBirthdayToday(employees: any[]) {
 export async function sendGiftVoucherToBirthdayEmployees() {
   try {
     const employees = await getAllEmployee()
-    const birthdayEmployees = getEmployeesWithBirthdayToday(employees)
+    const birthdayEmployees = getEmployeesWithBirthdayToday(
+      employees.filter((employee: any) => {
+        return employee.status_join != 'Internship'
+      }),
+    )
     if (birthdayEmployees.length == 0) {
       return
     }
@@ -152,8 +156,11 @@ function getEmployeesWithBirthdaysNextWeek(employees: any[]) {
 export async function sendNotificationNextWeekBirthdayEmployees() {
   try {
     const employees = await getAllEmployee()
-    const employeesWithBirthdaysNextWeek =
-      getEmployeesWithBirthdaysNextWeek(employees)
+    const employeesWithBirthdaysNextWeek = getEmployeesWithBirthdaysNextWeek(
+      employees.filter((employee: any) => {
+        return employee.status_join != 'Internship'
+      }),
+    )
     if (employeesWithBirthdaysNextWeek.length == 0) {
       return
     }
