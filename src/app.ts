@@ -12,8 +12,6 @@ import {
   processEngineerTickets,
 } from './database'
 import {
-  fetchNusaworkAuthToken,
-  fetchNusaworkEmployeePhoneNumbers,
   sendWaNotification,
   submitSilenceAlert,
   syncNusacontactContact,
@@ -30,12 +28,12 @@ import {
   sendGiftVoucherToBirthdayEmployees,
   sendNotificationNextWeekBirthdayEmployees,
 } from './birthday'
+import { fetchNusaworkEmployeePhoneNumbers } from './nusawork'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
-  const authToken = await fetchNusaworkAuthToken()
   const nusaworkEmployeePhoneNumbers =
-    await fetchNusaworkEmployeePhoneNumbers(authToken)
+    await fetchNusaworkEmployeePhoneNumbers()
 
   for (const { employeeId, phoneNumber } of nisEmployeePhoneNumbers) {
     const nisPhoneNumber = phoneNumber

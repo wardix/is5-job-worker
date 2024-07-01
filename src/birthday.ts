@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs'
 import { createCanvas, loadImage } from 'canvas'
 import sharp from 'sharp'
-import axios from 'axios'
 import os from 'os'
 import path from 'path'
 import {
@@ -9,44 +8,13 @@ import {
   birthdayGiftVoucherTemplatePath,
   birthdayPicPhones,
   birthdayWishes,
-  nusaworkEmployeeApiUrl,
 } from './config'
 import {
-  fetchNusaworkAuthToken,
   sendWaNotification,
   sendWaNotificationMedia,
 } from './api'
 import logger from './logger'
-
-async function getAllEmployee() {
-  const today = new Date()
-  const yyyy = today.getFullYear()
-  const mm = String(today.getMonth() + 1).padStart(2, '0')
-  const dd = String(today.getDate()).padStart(2, '0')
-  const formatedToday = `${yyyy}-${mm}-${dd}`
-
-  const payload = {
-    fields: {
-      active_status: ['active'],
-    },
-    page_count: 10000,
-    currentPage: 1,
-    periods: [formatedToday, formatedToday],
-  }
-
-  try {
-    const token = await fetchNusaworkAuthToken()
-    const response = await axios.post(nusaworkEmployeeApiUrl, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-    return response.data.data.list
-  } catch (error: any) {
-    logger.warning(`Error get all employee: ${error.message}`)
-  }
-}
+import { getAllEmployee } from './nusawork'
 
 function getEmployeesWithBirthdayToday(employees: any[]) {
   const today = new Date()

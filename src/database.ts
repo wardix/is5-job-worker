@@ -2,10 +2,10 @@ import mysql, { Pool, RowDataPacket } from 'mysql2/promise'
 import { dbzMysqlConfig, nisMysqlConfig, zabbixMysqlConfig } from './config'
 import logger from './logger'
 import {
-  fetchNusaworkPresentEngineers,
   fetchVisitCards,
   sendWaNotification,
 } from './api'
+import { fetchNusaworkPresentEngineers } from './nusawork'
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
