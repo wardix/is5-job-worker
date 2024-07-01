@@ -10,7 +10,7 @@ export async function fetchNusaworkAuthToken(): Promise<string> {
   return response.data.token
 }
 
-export async function getAllEmployee() {
+export async function getAllEmployee(token: string) {
   const today = new Date()
   const yyyy = today.getFullYear()
   const mm = String(today.getMonth() + 1).padStart(2, '0')
@@ -27,7 +27,6 @@ export async function getAllEmployee() {
   }
 
   try {
-    const token = await fetchNusaworkAuthToken()
     const response = await axios.post(nusaworkEmployeeApiUrl, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,13 +54,13 @@ export function getNusaworkEmployeePhoneNumbers(employees: any) {
 
 export async function fetchNusaworkPresentEngineers(
   engineerMap: any,
+  token: string,
 ): Promise<string[]> {
   const presentEngineers: string[] = []
 
-  const nusaworkToken = await fetchNusaworkAuthToken()
   const nusaworkResponse = await axios.get(nusaworkAttendanceApiUrl, {
     headers: {
-      Authorization: `Bearer ${nusaworkToken}`,
+      Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
     params: {

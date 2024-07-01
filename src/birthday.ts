@@ -14,7 +14,7 @@ import {
   sendWaNotificationMedia,
 } from './api'
 import logger from './logger'
-import { getAllEmployee } from './nusawork'
+import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 
 function getEmployeesWithBirthdayToday(employees: any[]) {
   const today = new Date()
@@ -34,7 +34,8 @@ function getEmployeesWithBirthdayToday(employees: any[]) {
 
 export async function sendGiftVoucherToBirthdayEmployees() {
   try {
-    const employees = await getAllEmployee()
+    const token = await fetchNusaworkAuthToken()
+    const employees = await getAllEmployee(token)
     const birthdayEmployees = getEmployeesWithBirthdayToday(
       employees.filter((employee: any) => {
         return employee.status_join != 'Internship'
@@ -123,7 +124,8 @@ function getEmployeesWithBirthdaysNextWeek(employees: any[]) {
 
 export async function sendNotificationNextWeekBirthdayEmployees() {
   try {
-    const employees = await getAllEmployee()
+    const token = await fetchNusaworkAuthToken()
+    const employees = await getAllEmployee(token)
     const employeesWithBirthdaysNextWeek = getEmployeesWithBirthdaysNextWeek(
       employees.filter((employee: any) => {
         return employee.status_join != 'Internship'

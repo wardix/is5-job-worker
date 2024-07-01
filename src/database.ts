@@ -5,7 +5,7 @@ import {
   fetchVisitCards,
   sendWaNotification,
 } from './api'
-import { fetchNusaworkPresentEngineers } from './nusawork'
+import { fetchNusaworkAuthToken, fetchNusaworkPresentEngineers } from './nusawork'
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
@@ -376,12 +376,13 @@ export async function processEngineerTickets(
   const startTime = new Date()
   startTime.setHours(8, 30, 0, 0)
 
+  const token = await fetchNusaworkAuthToken()
   let engineerMap = await fetchEngineers()
   const { ticketMap, visitcardTicketMap, ticketIdPicNoPairSets } =
     await fetchTickets(startTime)
   engineerMap = await processTiketData(engineerMap, ticketIdPicNoPairSets)
 
-  const presentEngineers = await fetchNusaworkPresentEngineers(engineerMap)
+  const presentEngineers = await fetchNusaworkPresentEngineers(engineerMap, token)
 
   const visitcardCurrentUserTickets = await fetchVisitCards()
 
