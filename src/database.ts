@@ -17,6 +17,42 @@ export interface EmployeePhoneNumber {
   phoneNumber: string
 }
 
+export interface EmployeeStruct {
+  employeeId: string
+  reportToId: string
+  description: string
+}
+
+export async function fetchNisEmployeeStructs(): Promise<EmployeeStruct[]> {
+  const sql =
+    'SELECT em.employee_id AS employeeId, em.employee_parent_id AS reportToId, em.description FROM employee_map em LEFT JOIN Employee e ON em.employee_id = e.EmpId WHERE e.BranchId = ? AND e.EmpJoinStatus != ?'
+  const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(sql, [
+    '020',
+    'QUIT',
+  ])
+  return rows as EmployeeStruct[]
+}
+
+export async function updateNisEmployeestruct(
+  employeeId: string,
+  reportToId: string,
+  description: string,
+): Promise<void> {
+  const sql =
+    'REPLACE INTO employee_map SET employee_id = ?, employee_parent_id = ?, description = ?'
+  try {
+    await nisMysqlPool.execute(sql, [employeeId, reportToId, description])
+    logger.info(
+      `Employee struct updated successfully for employeeId: ${employeeId}`,
+    )
+  } catch (error) {
+    const errorMessage = (error as Error).message
+    logger.error(
+      `Error updating employee struct for employeeId: ${employeeId} ${errorMessage}`,
+    )
+  }
+}
+
 export async function fetchNisEmployeePhoneNumbers(): Promise<
   EmployeePhoneNumber[]
 > {

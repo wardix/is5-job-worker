@@ -10,6 +10,8 @@ import {
   findOverSpeedGraphs,
   getContactDetail,
   processEngineerTickets,
+  fetchNisEmployeeStructs,
+  updateNisEmployeestruct,
 } from './database'
 import {
   sendWaNotification,
@@ -23,7 +25,7 @@ import {
   overSpeedBlockedSubscriberThreshold,
 } from './config'
 import { formatContact } from './nusacontact'
-import { convertToSeconds, parseAttributes } from './utils'
+import { convertToSeconds, formatPhoneNumber, parseAttributes } from './utils'
 import {
   sendGiftVoucherToBirthdayEmployees,
   sendNotificationNextWeekBirthdayEmployees,
@@ -31,25 +33,54 @@ import {
 import {
   fetchNusaworkAuthToken,
   getAllEmployee,
-  getNusaworkEmployeePhoneNumbers,
 } from './nusawork'
 
-async function synchronizeEmployeePhoneNumbers(): Promise<void> {
+async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
-  const employees = getAllEmployee(token)
+  const employees = await getAllEmployee(token)
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
-  const nusaworkEmployeePhoneNumbers =
-    getNusaworkEmployeePhoneNumbers(employees)
+  const nisEmployeeStructs = await fetchNisEmployeeStructs()
 
-  for (const { employeeId, phoneNumber } of nisEmployeePhoneNumbers) {
-    const nisPhoneNumber = phoneNumber
-    const nusaworkPhoneNumber = nusaworkEmployeePhoneNumbers[employeeId]
+  employees.forEach(async (employee: any) => {
+    const {
+      employee_id: employeeId,
+      id_report_to_value: reportToUserId,
+      job_position: jobPosition,
+      mobile_phone: mobilePhone,
+      whatsapp,
+    } = employee
+    const [{ employee_id: reportToId }] = employees.filter(
+      (e: any) => e.user_id == reportToUserId,
+    )
+    const { reportToId: nisReportToId, description } = nisEmployeeStructs.find(
+      (e: any) => e.employeeId === employeeId,
+    ) || { reportToId: '', description: '' }
 
-    if (!nusaworkPhoneNumber || nisPhoneNumber === nusaworkPhoneNumber) continue
+    const nisEmployeePhoneNumber = nisEmployeePhoneNumbers.find(
+      (e: any) => e.employeeId === employeeId,
+    )
 
-    logger.info(`${employeeId}: ${nisPhoneNumber} -> ${nusaworkPhoneNumber}`)
-    await updateNisEmployeePhoneNumber(employeeId, nusaworkPhoneNumber)
-  }
+    const validPhone = formatPhoneNumber(whatsapp || mobilePhone)
+
+    if (reportToId !== nisReportToId || description !== jobPosition) {
+      await updateNisEmployeestruct(employeeId, reportToId, jobPosition)
+      logger.info(
+        `update employee struct: ${employeeId} ${reportToId} ${jobPosition}`,
+      )
+    }
+
+    if (
+      !validPhone ||
+      !nisEmployeePhoneNumber ||
+      nisEmployeePhoneNumber.phoneNumber === validPhone
+    ) {
+      return
+    }
+    await updateNisEmployeePhoneNumber(employeeId, validPhone)
+    logger.info(
+      `update employee phone: ${employeeId}: ${nisEmployeePhoneNumber.phoneNumber} -> ${validPhone}`,
+    )
+  })
 }
 
 async function deleteDeadGraphLinks(): Promise<void> {
@@ -157,8 +188,8 @@ export async function executeJob(jobData: any): Promise<void> {
 
   // Check the job name and execute the corresponding function
   switch (jobData.name) {
-    case 'syncEmployeeHP':
-      await synchronizeEmployeePhoneNumbers()
+    case 'syncEmployeeData':
+      await synchronizeEmployeeData()
       break
 
     case 'delDeadGraphLink':
