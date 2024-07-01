@@ -9,10 +9,7 @@ import {
   birthdayPicPhones,
   birthdayWishes,
 } from './config'
-import {
-  sendWaNotification,
-  sendWaNotificationMedia,
-} from './api'
+import { sendWaNotification, sendWaNotificationMedia } from './api'
 import logger from './logger'
 import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 

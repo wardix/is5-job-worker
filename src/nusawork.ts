@@ -1,5 +1,10 @@
 import axios from 'axios'
-import { nusaworkAttendanceApiUrl, nusaworkAuthTokenApiKey, nusaworkAuthTokenApiUrl, nusaworkEmployeeApiUrl } from './config'
+import {
+  nusaworkAttendanceApiUrl,
+  nusaworkAuthTokenApiKey,
+  nusaworkAuthTokenApiUrl,
+  nusaworkEmployeeApiUrl,
+} from './config'
 import logger from './logger'
 import { formatPhoneNumber } from './utils'
 

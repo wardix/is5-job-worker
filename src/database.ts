@@ -1,11 +1,11 @@
 import mysql, { Pool, RowDataPacket } from 'mysql2/promise'
 import { dbzMysqlConfig, nisMysqlConfig, zabbixMysqlConfig } from './config'
 import logger from './logger'
+import { fetchVisitCards, sendWaNotification } from './api'
 import {
-  fetchVisitCards,
-  sendWaNotification,
-} from './api'
-import { fetchNusaworkAuthToken, fetchNusaworkPresentEngineers } from './nusawork'
+  fetchNusaworkAuthToken,
+  fetchNusaworkPresentEngineers,
+} from './nusawork'
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
@@ -382,7 +382,10 @@ export async function processEngineerTickets(
     await fetchTickets(startTime)
   engineerMap = await processTiketData(engineerMap, ticketIdPicNoPairSets)
 
-  const presentEngineers = await fetchNusaworkPresentEngineers(engineerMap, token)
+  const presentEngineers = await fetchNusaworkPresentEngineers(
+    engineerMap,
+    token,
+  )
 
   const visitcardCurrentUserTickets = await fetchVisitCards()
 

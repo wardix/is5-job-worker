@@ -28,13 +28,18 @@ import {
   sendGiftVoucherToBirthdayEmployees,
   sendNotificationNextWeekBirthdayEmployees,
 } from './birthday'
-import { fetchNusaworkAuthToken, getAllEmployee, getNusaworkEmployeePhoneNumbers } from './nusawork'
+import {
+  fetchNusaworkAuthToken,
+  getAllEmployee,
+  getNusaworkEmployeePhoneNumbers,
+} from './nusawork'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
   const employees = getAllEmployee(token)
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
-  const nusaworkEmployeePhoneNumbers = getNusaworkEmployeePhoneNumbers(employees)
+  const nusaworkEmployeePhoneNumbers =
+    getNusaworkEmployeePhoneNumbers(employees)
 
   for (const { employeeId, phoneNumber } of nisEmployeePhoneNumbers) {
     const nisPhoneNumber = phoneNumber
