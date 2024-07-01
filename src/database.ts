@@ -9,7 +9,6 @@ import {
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
-const dbzabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
 const dbzMysqlPool: Pool = mysql.createPool(dbzMysqlConfig)
 
 export interface EmployeePhoneNumber {
