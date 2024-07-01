@@ -28,12 +28,12 @@ import {
   sendGiftVoucherToBirthdayEmployees,
   sendNotificationNextWeekBirthdayEmployees,
 } from './birthday'
-import { fetchNusaworkEmployeePhoneNumbers } from './nusawork'
+import { getAllEmployee, getNusaworkEmployeePhoneNumbers } from './nusawork'
 
 async function synchronizeEmployeePhoneNumbers(): Promise<void> {
+  const employees = getAllEmployee()
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
-  const nusaworkEmployeePhoneNumbers =
-    await fetchNusaworkEmployeePhoneNumbers()
+  const nusaworkEmployeePhoneNumbers = getNusaworkEmployeePhoneNumbers(employees)
 
   for (const { employeeId, phoneNumber } of nisEmployeePhoneNumbers) {
     const nisPhoneNumber = phoneNumber

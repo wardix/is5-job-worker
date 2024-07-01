@@ -40,8 +40,7 @@ export async function getAllEmployee() {
   }
 }
 
-export async function fetchNusaworkEmployeePhoneNumbers(): Promise<Record<string, string>> {
-  const employees = await getAllEmployee()
+export function getNusaworkEmployeePhoneNumbers(employees: any) {
   const employeePhoneNumbers: Record<string, string> = {}
   employees.forEach((employee: any) => {
     const formattedPhoneNumber = formatPhoneNumber(
