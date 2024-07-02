@@ -23,6 +23,7 @@ import {
   overSpeedBlockedSubscriberMetricFilePath,
   overSpeedBlockedSubscriberMetricName,
   overSpeedBlockedSubscriberThreshold,
+  structureIgnoredEmployees,
 } from './config'
 import { formatContact } from './nusacontact'
 import { convertToSeconds, formatPhoneNumber, parseAttributes } from './utils'
@@ -30,16 +31,14 @@ import {
   sendGiftVoucherToBirthdayEmployees,
   sendNotificationNextWeekBirthdayEmployees,
 } from './birthday'
-import {
-  fetchNusaworkAuthToken,
-  getAllEmployee,
-} from './nusawork'
+import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
   const employees = await getAllEmployee(token)
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
   const nisEmployeeStructs = await fetchNisEmployeeStructs()
+  const ignoredEmployees = JSON.parse(structureIgnoredEmployees)
 
   employees.forEach(async (employee: any) => {
     const {
@@ -62,7 +61,10 @@ async function synchronizeEmployeeData(): Promise<void> {
 
     const validPhone = formatPhoneNumber(whatsapp || mobilePhone)
 
-    if (reportToId !== nisReportToId || description !== jobPosition) {
+    if (
+      !ignoredEmployees.includes(employeeId) &&
+      (reportToId !== nisReportToId || description !== jobPosition)
+    ) {
       await updateNisEmployeestruct(employeeId, reportToId, jobPosition)
       logger.info(
         `update employee struct: ${employeeId} ${reportToId} ${jobPosition}`,
