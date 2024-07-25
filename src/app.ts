@@ -32,6 +32,7 @@ import {
   sendNotificationNextWeekBirthdayEmployees,
 } from './birthday'
 import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
+import { getFiberstarHomepass } from './fiberstar'
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
@@ -224,6 +225,10 @@ export async function executeJob(jobData: any): Promise<void> {
         jobData.contact as string,
         jobData.notify as string,
       )
+      break
+
+    case 'fiberstarHomepass':
+      await getFiberstarHomepass()
       break
 
     default:
