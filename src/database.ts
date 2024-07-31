@@ -587,3 +587,102 @@ export async function processEngineerTickets(
 
   sendWaNotification({ to: phoneNumber, msg: message })
 }
+
+export async function fetchFiberstarConfig(key: string): Promise<any> {
+  const query = 'SELECT * FROM fiberstar_configs WHERE config_key = ?'
+  const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(query, [key])
+  return rows[0];
+}
+
+export async function saveFiberstarConfig(key: string, value: any): Promise<void> {
+  try {
+    const query = 'REPLACE INTO fiberstar_configs (config_key, branch_id, config_value, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())'
+    await nisMysqlPool.execute(query, [key, '020', JSON.stringify(value)])
+    logger.info(`Fiberstar config ${key} saved successfully`)
+  } catch (error) {
+    logger.error(`Error saving fiberstar config ${key}`)
+  }
+}
+
+export async function saveFiberstarHomepass(
+  coordinate: string,
+  code: string,
+  address: string,
+  type: string,
+  time: number
+): Promise<void> {
+  try {
+    const query = 'INSERT INTO FiberCoverage VALUES (NULL, "fiberstar", ?, ?, ?, ?, ?, 0, ?)'
+    const homepassCoordiante = coordinate.split(',').map((coordinate: string) => {
+      switch (coordinate.slice(0,1).toLowerCase()) {
+        case 's':
+        case 'w':
+          coordinate = '-' + coordinate.slice(1)
+          break
+        case 'n':
+        case 'e':
+          coordinate = coordinate.slice(1)
+          break
+      }
+      return parseFloat(coordinate.trim())
+    })
+    const params = [homepassCoordiante[0], homepassCoordiante[1], code, address, type, time]
+    await nisMysqlPool.execute(query, params)
+    logger.info('Homepass saved successfully')
+  } catch (error: any) {
+    logger.error(error.message, 'failed save homepass')
+  }
+}
+
+export async function updateFiberstarHomepass(
+  id: number,
+  coordinate: string,
+  code: string,
+  address: string,
+  type: string,
+  time: number
+): Promise<void> {
+  try {
+    const query = 'UPDATE FiberCoverage SET latitude = ?, longitude = ?, code = ?, `description` = ?, `type` = ?, `time` = ? WHERE id = ?'
+    const homepassCoordiante = coordinate.split(',').map((coordinate: string) => {
+      switch (coordinate.slice(0,1).toLowerCase()) {
+        case 's':
+        case 'w':
+          coordinate = '-' + coordinate.slice(1)
+          break
+        case 'n':
+        case 'e':
+          coordinate = coordinate.slice(1)
+          break
+      }
+      return parseFloat(coordinate.trim())
+    })
+    const params = [homepassCoordiante[0], homepassCoordiante[1], code, address, type, time, id]
+    await nisMysqlPool.execute(query, params)
+    logger.info('Homepass updated successfully')
+  } catch (error: any) {
+    console.log(error.message, 'update homepass')
+  }
+}
+
+export async function deleteFiberstarHomepass(vendor: string, code: string, type: string): Promise<void> {
+  try {
+    const query = 'DELETE FROM FiberCoverage WHERE vendor = ? AND code = ? AND `type` = ?'
+    await nisMysqlPool.execute(query, [vendor, code, type])
+    logger.info('Homepass deleted successfully')
+  } catch (error: any) {
+    console.log(error.message, 'delete homepass')
+  }
+}
+
+export async function fetchFiberstarHomepass(vendor: string, code: string, type: string): Promise<number|undefined> {
+  try {
+    const query = 'SELECT * FROM FiberCoverage WHERE vendor = ? AND code = ? AND type = ? ORDER BY id DESC LIMIT 1'
+    const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(query, [vendor, code, type])
+    const data = rows[0]
+    return data.id
+  } catch (error: any) {
+    logger.error(error.message, 'failed fetch homepass')
+  }
+  return 0
+}
