@@ -41,29 +41,6 @@ const formatDate = (async (date: Date) => {
     return `${yyyy}-${mm}-${dd}`
 });
 
-axios.interceptors.request.use(async (config) => {
-    config.baseURL = fiberstarHomepassApiUrl
-    if (config.url != FiberstarEndpoint.API_AUTH_TOKEN) {
-        const result = await fetchFiberstarConfig(FiberstarConfigKeys.AUTH_TOKEN)
-        if (result != undefined) {
-            const authResponse = JSON.parse(result.config_value)
-            if (authResponse.time_request != undefined) {
-                const timeRequest = new Date(authResponse.time_request)
-                const timeNow = new Date()
-                const diff = Math.floor((timeNow.getTime() - timeRequest.getTime()) / 1000)
-                if (diff < authResponse.expires_in) {
-                    config.headers['Authorization'] = `Bearer ${authResponse.token}`
-                    return config
-                }
-            }
-        }
-
-        const token = await login()
-        config.headers['Authorization'] = `Bearer ${token}`
-    }
-    return config
-});
-
 export async function getFiberstarHomepass() {
     try {
         const allowedCities = JSON.parse(fiberstarAllowedCities)
@@ -100,10 +77,43 @@ export async function getFiberstarHomepass() {
     }
 }
 
+function getAxiosInstance(): any {
+    const newAxios = axios.create({
+        baseURL: fiberstarHomepassApiUrl,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+
+    newAxios.interceptors.request.use(async (config) => {
+        config.baseURL = fiberstarHomepassApiUrl
+        if (config.url != FiberstarEndpoint.API_AUTH_TOKEN) {
+            const result = await fetchFiberstarConfig(FiberstarConfigKeys.AUTH_TOKEN)
+            if (result != undefined) {
+                const authResponse = JSON.parse(result.config_value)
+                if (authResponse.time_request != undefined) {
+                    const timeRequest = new Date(authResponse.time_request)
+                    const timeNow = new Date()
+                    const diff = Math.floor((timeNow.getTime() - timeRequest.getTime()) / 1000)
+                    if (diff < authResponse.expires_in) {
+                        config.headers['Authorization'] = `Bearer ${authResponse.token}`
+                        return config
+                    }
+                }
+            }
+
+            const token = await login()
+            config.headers['Authorization'] = `Bearer ${token}`
+        }
+        return config
+    });
+    return newAxios
+}
+
 async function login(): Promise<any> {
     try {
         const token = Buffer.from(`${fiberstarHomepassApiEmail}:${fiberstarHomepassApiPassword}`).toString('base64')
-        const response = await axios.post(FiberstarEndpoint.API_AUTH_TOKEN, {}, {
+        const response = await getAxiosInstance().post(FiberstarEndpoint.API_AUTH_TOKEN, {}, {
             headers: {
                 'Authorization': `Basic ${token}`,
             },
@@ -120,7 +130,7 @@ async function login(): Promise<any> {
 
 async function getFiberstarCities(): Promise<any> {
     try {
-        const cities = await axios.get(FiberstarEndpoint.API_KOTA)
+        const cities = await getAxiosInstance().get(FiberstarEndpoint.API_KOTA)
         await saveFiberstarConfig(FiberstarConfigKeys.CITIES, cities.data.message)
         return cities.data.message
     } catch (error: any) {
@@ -134,7 +144,7 @@ async function getFiberstarCities(): Promise<any> {
 
 async function getFiberstarHomepassType(): Promise<any> {
     try {
-        const homepassTypes = await axios.get(FiberstarEndpoint.API_TIPE_HOMEPASS)
+        const homepassTypes = await getAxiosInstance().get(FiberstarEndpoint.API_TIPE_HOMEPASS)
         await saveFiberstarConfig(FiberstarConfigKeys.HOMEPASS_TYPES, homepassTypes.data.message)
         return homepassTypes.data.message
     } catch (error: any) {
@@ -148,7 +158,7 @@ async function getFiberstarHomepassType(): Promise<any> {
 
 async function getFiberstarHomepassDetails(body: any, page: number) {
     try {
-        const response = await axios.post(FiberstarEndpoint.API_HOMEPASS_DETAILS, body, {
+        const response = await getAxiosInstance().post(FiberstarEndpoint.API_HOMEPASS_DETAILS, body, {
             params: {
                 "page": page,
             },
@@ -182,7 +192,7 @@ async function getFiberstarHomepassDetails(body: any, page: number) {
 
 async function getFiberstarUpdatedHomepass(body: any, page: number) {
     try {
-        const response = await axios.post(FiberstarEndpoint.API_UPDATED_HOMEPASS, body, {
+        const response = await getAxiosInstance().post(FiberstarEndpoint.API_UPDATED_HOMEPASS, body, {
             params: {
                 "page": page,
             },
@@ -211,7 +221,7 @@ async function getFiberstarUpdatedHomepass(body: any, page: number) {
 
 async function getFiberstarDeletedHomepass(body: any, page: number) {
     try {
-        const response = await axios.post(FiberstarEndpoint.API_DELETED_HOMEPASS, body, {
+        const response = await getAxiosInstance().post(FiberstarEndpoint.API_DELETED_HOMEPASS, body, {
             params: {
                 "page": page,
             },
