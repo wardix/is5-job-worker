@@ -33,6 +33,7 @@ import {
 } from './birthday'
 import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 import { getFiberstarHomepass } from './fiberstar'
+import { generateGamasMetrics } from './gamas-exporter'
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
@@ -201,6 +202,10 @@ export async function executeJob(jobData: any): Promise<void> {
 
     case 'genOverSpeedBlockedSubscriberMetrics':
       await generateOverSpeedBlockedSubscriberMetrics()
+      break
+
+    case 'genGamasMetrics':
+      await generateGamasMetrics()
       break
 
     case 'syncNusacontactCustomer':
