@@ -1,13 +1,9 @@
-import path from 'path'
-import fs from 'fs'
 import {
   fetchNisEmployeePhoneNumbers,
   updateNisEmployeePhoneNumber,
   deleteNisGraphs,
   fetchNisGraphs,
   findDeadGraphs,
-  fetchBlockedSubscriberGraphs,
-  findOverSpeedGraphs,
   getContactDetail,
   processEngineerTickets,
   fetchNisEmployeeStructs,
@@ -19,12 +15,7 @@ import {
   syncNusacontactContact,
 } from './api'
 import logger from './logger'
-import {
-  overSpeedBlockedSubscriberMetricFilePath,
-  overSpeedBlockedSubscriberMetricName,
-  overSpeedBlockedSubscriberThreshold,
-  structureIgnoredEmployees,
-} from './config'
+import { structureIgnoredEmployees } from './config'
 import { formatContact } from './nusacontact'
 import { convertToSeconds, formatPhoneNumber, parseAttributes } from './utils'
 import {
@@ -34,6 +25,7 @@ import {
 import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 import { getFiberstarHomepass } from './fiberstar'
 import { generateGamasMetrics } from './gamas-exporter'
+import { generateOverSpeedBlockedSubscriberMetrics } from './overspeed-exporter'
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
@@ -94,46 +86,6 @@ async function deleteDeadGraphLinks(): Promise<void> {
     return
   }
   await deleteNisGraphs(deadGraphs)
-}
-
-async function generateOverSpeedBlockedSubscriberMetrics(): Promise<void> {
-  const metricName = overSpeedBlockedSubscriberMetricName
-  const metricFilePath = overSpeedBlockedSubscriberMetricFilePath
-  const subscribersGraphMap = await fetchBlockedSubscriberGraphs()
-  const graphIds: number[] = []
-  for (const graphId in subscribersGraphMap) {
-    graphIds.push(+graphId)
-  }
-  const overSpeedGraphs = await findOverSpeedGraphs(
-    graphIds,
-    +overSpeedBlockedSubscriberThreshold,
-  )
-  const overSpeedSubscriberIds: number[] = []
-  const overSpeedSubscribers: any[] = []
-  for (const subscribers of overSpeedGraphs.map(
-    (e) => subscribersGraphMap[`${e}`],
-  )) {
-    for (const subscriber of subscribers) {
-      if (overSpeedSubscriberIds.includes(subscriber.csid)) {
-        continue
-      }
-      overSpeedSubscriberIds.push(subscriber.csid)
-      overSpeedSubscribers.push(subscriber)
-    }
-  }
-  const output: string[] = []
-  overSpeedSubscribers.forEach(({ csid, acc }) => {
-    output.push(`${metricName}{csid="${csid}",acc="${acc}"} 1`)
-  })
-  const metricDirectoryPath = path.dirname(metricFilePath)
-  const tempDirectoryPath = fs.mkdtempSync(
-    path.join(metricDirectoryPath, 'temp-'),
-  )
-  const tempFilePath = path.join(tempDirectoryPath, 'tempfile.txt')
-  fs.writeFileSync(tempFilePath, output.join('\n'))
-
-  fs.renameSync(tempFilePath, metricFilePath)
-  fs.rmdirSync(tempDirectoryPath)
 }
 
 async function syncNusacontactCustomer(phone: string): Promise<void> {
