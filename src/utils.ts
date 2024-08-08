@@ -54,6 +54,7 @@ export function parseAttributes(input: string): any {
     switch (currentState) {
       case INITIAL_STATE:
         if (currentCharacter === ' ') continue
+        if (currentCharacter === ',') continue
         if (currentCharacter === '=') {
           throw new Error(
             'Parsing error: "=" encountered without an attribute name.',
@@ -86,7 +87,7 @@ export function parseAttributes(input: string): any {
         break
 
       case READING_VALUE:
-        if (currentCharacter === ' ') {
+        if (currentCharacter === ' ' || currentCharacter === ',') {
           commitAttribute()
         } else {
           valueBuffer.push(currentCharacter)

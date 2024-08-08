@@ -84,6 +84,12 @@ export const nusacontactApiKey = process.env.NUSACONTACT_API_KEY || ''
 export const nusacontactSyncContactMaxAttempts =
   process.env.NUSACONTACT_SYNC_CONTACT_MAX_ATTEMPTS || '8'
 
+export const nusacontactMetricsUrl = process.env.NUSACONTACT_METRICS_URL || ''
+export const nusacontactQueueMetricName =
+  process.env.NUSACONTACT_QUEUE_METRIC_NAME || 'nusacontact_queue'
+export const nusacontactQueueMetricFilePath =
+  process.env.NUSACONTACT_QUEUE_METRIC_FILE_PATH || '/tmp/nusacontact.txt'
+
 export const birthdayGiftVoucherTemplatePath =
   process.env.BIRTHDAY_GIFT_VOUCHER_TEMPLATE_PATH || '/tmp/template.png'
 export const birthdayGiftVoucherPeriodDays =

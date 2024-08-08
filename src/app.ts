@@ -26,6 +26,7 @@ import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 import { getFiberstarHomepass } from './fiberstar'
 import { generateGamasMetrics } from './gamas-exporter'
 import { generateOverSpeedBlockedSubscriberMetrics } from './overspeed-exporter'
+import { generateNusacontactQueueMetrics } from './nusacontact-exporter'
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
@@ -158,6 +159,10 @@ export async function executeJob(jobData: any): Promise<void> {
 
     case 'genGamasMetrics':
       await generateGamasMetrics()
+      break
+
+    case 'genNusacontactQueueMetrics':
+      await generateNusacontactQueueMetrics()
       break
 
     case 'syncNusacontactCustomer':
