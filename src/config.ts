@@ -93,7 +93,11 @@ export const birthdayPicPhones = process.env.BIRTHDAY_PIC_PHONES || '[]'
 export const structureIgnoredEmployees =
   process.env.STRUCTURE_IGNORED_EMPLOYEES || '[]'
 
-export const fiberstarHomepassApiUrl = process.env.FIBERSTAR_HOMEPASS_API_URL || ''
-export const fiberstarHomepassApiEmail = process.env.FIBERSTAR_HOMEPASS_API_EMAIL || ''
-export const fiberstarHomepassApiPassword = process.env.FIBERSTAR_HOMEPASS_API_PASSWORD || ''
-export const fiberstarAllowedCities = process.env.FIBERSTAR_ALLOWED_CITIES || '[]'
+export const fiberstarHomepassApiUrl =
+  process.env.FIBERSTAR_HOMEPASS_API_URL || ''
+export const fiberstarHomepassApiEmail =
+  process.env.FIBERSTAR_HOMEPASS_API_EMAIL || ''
+export const fiberstarHomepassApiPassword =
+  process.env.FIBERSTAR_HOMEPASS_API_PASSWORD || ''
+export const fiberstarAllowedCities =
+  process.env.FIBERSTAR_ALLOWED_CITIES || '[]'
