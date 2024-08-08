@@ -2,12 +2,6 @@ import path from 'path'
 import fs from 'fs'
 import axios from 'axios'
 import {
-  gamasAlertApiUrl,
-  gamasMassIncidentCountThreshold,
-  gamasMassIncidentPeriodSeconds,
-  gamasMaxIncidentAgeSeconds,
-  gamasMetricFilePath,
-  gamasMetricName,
   nusacontactApiKey,
   nusacontactMetricsUrl,
   nusacontactQueueMetricFilePath,
@@ -39,7 +33,6 @@ export async function generateNusacontactQueueMetrics() {
     const { inbox_waiting_start_time: metricsData } = parseMetricLines(
       response.data,
     )
-    console.log(JSON.stringify(metricsData, null, 2))
     metricsData
       .filter((d) => {
         return d.labels.type == 'enqueued'
