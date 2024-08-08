@@ -87,6 +87,8 @@ export const nusacontactSyncContactMaxAttempts =
 export const nusacontactMetricsUrl = process.env.NUSACONTACT_METRICS_URL || ''
 export const nusacontactQueueMetricName =
   process.env.NUSACONTACT_QUEUE_METRIC_NAME || 'nusacontact_queue'
+export const nusacontactQueueGroups =
+  process.env.NUSACONTACT_QUEUE_GROUPS || '["helpdesk","billing"]'
 export const nusacontactQueueMetricFilePath =
   process.env.NUSACONTACT_QUEUE_METRIC_FILE_PATH || '/tmp/nusacontact.txt'
 

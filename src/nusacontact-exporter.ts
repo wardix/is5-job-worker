@@ -4,6 +4,7 @@ import axios from 'axios'
 import {
   nusacontactApiKey,
   nusacontactMetricsUrl,
+  nusacontactQueueGroups,
   nusacontactQueueMetricFilePath,
   nusacontactQueueMetricName,
 } from './config'
@@ -25,7 +26,7 @@ interface Result {
 
 export async function generateNusacontactQueueMetrics() {
   try {
-    const tags = ['helpdesk', 'billing', 'nusaid']
+    const tags = JSON.parse(nusacontactQueueGroups)
     const queueCount: any = {}
     const response = await axios.get(nusacontactMetricsUrl, {
       headers: { 'X-Api-Key': nusacontactApiKey },
