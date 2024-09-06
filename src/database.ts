@@ -91,7 +91,7 @@ export async function fetchNisGraphs(): Promise<number[]> {
     " AND c.BranchId = '020'"
 
   const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(sql)
-  return rows.map((e) => +e.graphId)
+  return rows.map((e) => Number(e.graphId)).filter((e) => !isNaN(e))
 }
 
 export async function fetchBlockedSubscriberGraphs(): Promise<any> {
