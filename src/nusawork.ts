@@ -71,7 +71,7 @@ export async function fetchNusaworkPresentEngineers(
     params: {
       status: 'working,clock_out',
       id_branch: '5',
-      id_department: '31',
+      id_department: '31,49,50,51',
       sort_by: 'name',
       order_by: 'asc',
     },
