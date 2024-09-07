@@ -24,6 +24,9 @@ export async function generateOverSpeedBlockedSubscriberMetrics(): Promise<void>
   for (const subscribers of overSpeedGraphs.map(
     (e) => subscribersGraphMap[`${e}`],
   )) {
+    if (subscribers == null) {
+      continue
+    }
     for (const subscriber of subscribers) {
       if (overSpeedSubscriberIds.includes(subscriber.csid)) {
         continue
