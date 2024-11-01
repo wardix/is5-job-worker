@@ -449,6 +449,7 @@ export async function processEngineerTickets(
     '0202273': '🏗️Febry',
     '0201505': '🏗️Berto',
     '0201336': '🚨Solihin',
+    '0202481': '🚨Damar',
   }
 
   const orderedEngineers: any[] = []
