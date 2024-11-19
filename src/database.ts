@@ -120,6 +120,7 @@ export async function fetchBlockedSubscriberGraphs(): Promise<any> {
 export async function getContactDetail(phone: string): Promise<any> {
   const contact: {
     name: string
+    salutation: string
     ids: string[]
     branches: string[]
     companies: any[]
@@ -128,6 +129,7 @@ export async function getContactDetail(phone: string): Promise<any> {
     addresses: any[]
   } = {
     name: '',
+    salutation: '',
     ids: [],
     branches: [],
     companies: [],
@@ -141,13 +143,15 @@ export async function getContactDetail(phone: string): Promise<any> {
   }
 
   const sql =
-    'SELECT name, custId AS customerId FROM sms_phonebook' +
-    ` WHERE phone LIKE '%${phone}'` +
-    ' AND custId IS NOT NULL ORDER BY insertTime DESC'
+    'SELECT sp.name, tcs.salutation, sp.custId AS customerId FROM sms_phonebook sp' +
+    ' LEFT JOIN tapi_call_salutation tcs ON sp.salutationId = tcs.id' +
+    ` WHERE sp.phone LIKE '%${phone}'` +
+    ' AND sp.custId IS NOT NULL ORDER BY sp.insertTime DESC'
   const [rows] = await nisMysqlPool.execute<RowDataPacket[]>(sql)
-  rows.forEach(({ name, customerId }) => {
+  rows.forEach(({ name, salutation, customerId }) => {
     if (contact.name === '') {
       contact.name = name
+      contact.salutation = salutation
     }
     contact.ids.push(customerId)
   })

@@ -18,6 +18,7 @@ export function formatContact(phoneNumber: string, contact: any): any {
   }
 
   const attributes: any = {
+    salutation: contact.salutation,
     ids: contact.ids
       .map(
         (e: string) =>
