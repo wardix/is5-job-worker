@@ -7,8 +7,9 @@ export const jobQueue = process.env.JOB_QUEUE || 'job'
 export const initialRabbitMQBackoffTime = Number(
   process.env.BACKOFF_TIME_INIT || 16,
 )
-export const waNotificationApiUrl = process.env.WA_NOTIFICATION_API_URL || ''
-export const waNotificationApiKey = process.env.WA_NOTIFICATION_API_KEY || ''
+export const WA_NOTIFICATION_API_URL = process.env.WA_NOTIFICATION_API_URL || ''
+export const WA_NOTIFICATION_API_TOKEN =
+  process.env.WA_NOTIFICATION_API_TOKEN || ''
 
 export const nusaworkAuthTokenApiUrl = process.env.NUSAWORK_TOKEN_API_URL || ''
 export const nusaworkAuthTokenApiKey = process.env.NUSAWORK_TOKEN_API_KEY || ''

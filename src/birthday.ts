@@ -9,7 +9,7 @@ import {
   birthdayPicPhones,
   birthdayWishes,
 } from './config'
-import { sendWaNotification, sendWaNotificationMedia } from './api'
+import { sendWaNotification, sendWaNotificationImage } from './api'
 import logger from './logger'
 import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 
@@ -64,9 +64,9 @@ export async function sendGiftVoucherToBirthdayEmployees() {
         voucherEndPeriodDate,
       )
 
-      sendWaNotificationMedia(contactNo, giftOutputPath, birthdayWishes)
+      sendWaNotificationImage(contactNo, giftOutputPath, birthdayWishes)
       for (const phone of ccPhones) {
-        sendWaNotificationMedia(phone, giftOutputPath, birthdayWishes)
+        sendWaNotificationImage(phone, giftOutputPath, birthdayWishes)
       }
     }
     await fs.rm(uniqueDir, { recursive: true })

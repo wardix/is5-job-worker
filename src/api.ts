@@ -7,8 +7,8 @@ import {
   nusacontactSyncContactMaxAttempts,
   visitCardSummaryApiUrl,
   visitCardToken,
-  waNotificationApiUrl,
-  waNotificationApiKey,
+  WA_NOTIFICATION_API_URL,
+  WA_NOTIFICATION_API_TOKEN,
   silenceAlertApiUrl,
 } from './config'
 
@@ -19,32 +19,35 @@ export async function sendWaNotification({
   to: string
   msg: string
 }): Promise<void> {
-  const payload = { to, type: 'text', msg }
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Api-Key': waNotificationApiKey,
-  }
-  await axios.post(waNotificationApiUrl, payload, { headers })
+  await axios.post(
+    WA_NOTIFICATION_API_URL,
+    { to, body: 'text', text: msg },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${WA_NOTIFICATION_API_TOKEN}`,
+      },
+    },
+  )
 }
 
-export async function sendWaNotificationMedia(
+export async function sendWaNotificationImage(
   to: string,
   imageFilePath: string,
   caption: string,
 ): Promise<void> {
-  const mimeType = mime.lookup(imageFilePath)
-  const data = await fs.readFile(imageFilePath)
   const payload = {
     to,
-    type: 'media',
-    msg: `data:${mimeType};base64,${data.toString('base64')}`,
-    options: { caption },
+    body: 'image',
+    image: Buffer.from(await fs.readFile(imageFilePath)).toString('base64'),
+    caption,
   }
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Api-Key': waNotificationApiKey,
-  }
-  await axios.post(waNotificationApiUrl, payload, { headers })
+  await axios.post(WA_NOTIFICATION_API_URL, payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${WA_NOTIFICATION_API_TOKEN}`,
+    },
+  })
 }
 
 export async function syncNusacontactContact(data: any): Promise<void> {
