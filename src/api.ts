@@ -22,7 +22,7 @@ export async function sendWaNotification({
   const safeTo = to.endsWith('@c.us') ? to.replace('@c.us', '') : to
   await axios.post(
     WA_NOTIFICATION_API_URL,
-    { safeTo, body: 'text', text: msg },
+    { to: safeTo, body: 'text', text: msg },
     {
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export async function sendWaNotificationImage(
 ): Promise<void> {
   const safeTo = to.endsWith('@c.us') ? to.replace('@c.us', '') : to
   const payload = {
-    safeTo,
+    to: safeTo,
     body: 'image',
     image: Buffer.from(await fs.readFile(imageFilePath)).toString('base64'),
     caption,
