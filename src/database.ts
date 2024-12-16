@@ -283,7 +283,6 @@ export async function fetchEngineers(): Promise<any> {
     '0200601',
     '0200615',
     '0200617',
-    '0200912',
     '0201217',
     '0201308',
     '0201216',
@@ -454,6 +453,8 @@ export async function processEngineerTickets(
     '0201505': '🏗️Berto',
     '0201336': '🚨Solihin',
     '0202481': '🚨Damar',
+    '0202487': '🚨Aldo',
+    '0200912': '🛎️Bambang',
   }
 
   const orderedEngineers: any[] = []
