@@ -13,7 +13,9 @@ export async function generateOverSpeedBlockedSubscriberMetrics(): Promise<void>
   const subscribersGraphMap = await fetchBlockedSubscriberGraphs()
   const graphIds: number[] = []
   for (const graphId in subscribersGraphMap) {
-    graphIds.push(+graphId)
+    const gid = Number(graphId)
+    if (isNaN(gid)) continue
+    graphIds.push(gid)
   }
   const overSpeedGraphs = await findOverSpeedGraphs(
     graphIds,
