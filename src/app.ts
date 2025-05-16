@@ -8,6 +8,7 @@ import {
   processEngineerTickets,
   fetchNisEmployeeStructs,
   updateNisEmployeestruct,
+  updateNisEmployeeNickname,
 } from './database'
 import {
   sendWaNotification,
@@ -42,6 +43,7 @@ async function synchronizeEmployeeData(): Promise<void> {
       job_position: jobPosition,
       mobile_phone: mobilePhone,
       whatsapp,
+      nickname,
     } = employee
     const [{ employee_id: reportToId }] = employees.filter(
       (e: any) => e.user_id == reportToUserId,
@@ -63,6 +65,13 @@ async function synchronizeEmployeeData(): Promise<void> {
       await updateNisEmployeestruct(employeeId, reportToId, jobPosition)
       logger.info(
         `update employee struct: ${employeeId} ${reportToId} ${jobPosition}`,
+      )
+    }
+
+    if (nickname) {
+      await updateNisEmployeeNickname(employeeId, nickname)
+      logger.info(
+        `update employee nickname: ${employeeId}: ${nickname}`,
       )
     }
 

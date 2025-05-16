@@ -82,6 +82,24 @@ export async function updateNisEmployeePhoneNumber(
   }
 }
 
+export async function updateNisEmployeeNickname(
+  employeeId: string,
+  nickname: string,
+): Promise<void> {
+  const sql = 'UPDATE Employee SET EmpNickname = ? WHERE EmpId = ?'
+  try {
+    await nisMysqlPool.execute(sql, [nickname, employeeId])
+    logger.info(
+      `Employee nickname updated successfully for employeeId: ${employeeId}`,
+    )
+  } catch (error) {
+    const errorMessage = (error as Error).message
+    logger.error(
+      `Error updating nickname for employeeId: ${employeeId} ${errorMessage}`,
+    )
+  }
+}
+
 export async function fetchNisGraphs(): Promise<number[]> {
   const sql =
     'SELECT cszg.GraphId AS graphId FROM CustomerServicesZabbixGraph cszg' +
