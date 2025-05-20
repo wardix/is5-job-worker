@@ -310,7 +310,7 @@ export async function fetchEngineers(): Promise<any> {
   const sqlE = `
       SELECT EmpId employeeId, CONCAT(EmpFName, ' ', EmpLName) name, VisitCardUserId visitcardUserId
       FROM Employee
-      WHERE NOT EmpJoinStatus = 'QUIT' AND DisplayBranchId = '020' AND DeptId = '04'
+      WHERE NOT EmpJoinStatus = 'QUIT' AND DisplayBranchId = '020' AND DeptId = '34'
     `
 
   const engineerMap: any = {}
