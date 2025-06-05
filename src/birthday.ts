@@ -69,7 +69,6 @@ export async function sendGiftVoucherToBirthdayEmployees() {
         sendWaNotificationImage(phone, giftOutputPath, birthdayWishes)
       }
     }
-    await fs.rm(uniqueDir, { recursive: true })
   } catch (error: any) {
     logger.warning(`Error send gift voucher ${error.message}`)
   }
@@ -168,7 +167,7 @@ export async function sendNotificationNextWeekBirthdayEmployees() {
   }
 }
 
-async function createBirthdayVoucherGift(
+export async function createBirthdayVoucherGift(
   templatePath: string,
   outputPath: string,
   name: string,
@@ -181,9 +180,10 @@ async function createBirthdayVoucherGift(
     const textNameAreaHeight = 100
     const textNameFontSize = 68
 
-    const textEndPeriodX = 80
+    const textEndPeriodX = 68
     const textEndPeriodY = 1020
-    const textEndPeriodFontSize = 24
+    const textEndPeriodWidth = 398
+    const textEndPeriodFontSize = 28
 
     const formatedEndPeriodDate = endPeriodDate.toLocaleString('id-ID', {
       year: 'numeric',
@@ -227,7 +227,13 @@ async function createBirthdayVoucherGift(
     )
 
     context.font = `bold ${textEndPeriodFontSize}px arial`
-    context.fillText(formatedEndPeriodDate, textEndPeriodX, textEndPeriodY)
+    context.fillStyle = '#FFFFFF'
+    textWidth = context.measureText(formatedEndPeriodDate).width
+    context.fillText(
+      formatedEndPeriodDate,
+      textEndPeriodX + (textEndPeriodWidth - textWidth) / 2,
+      textEndPeriodY,
+    )
 
     // Convert the canvas to a buffer
     const buffer = canvas.toBuffer('image/png')
