@@ -473,6 +473,10 @@ export async function processEngineerTickets(
     '0202481': '🚨Damar',
     '0202487': '🚨Aldo',
     '0200912': '🛎️Bambang',
+    '0202530': '🚨Irfan',
+    '0202538': '🛎️Samuel',
+    '0202546': '🚨Surya',
+    '0202562': '🚨Jimmy',
   }
 
   const orderedEngineers: any[] = []
