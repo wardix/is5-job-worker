@@ -70,9 +70,7 @@ async function synchronizeEmployeeData(): Promise<void> {
 
     if (nickname) {
       await updateNisEmployeeNickname(employeeId, nickname)
-      logger.info(
-        `update employee nickname: ${employeeId}: ${nickname}`,
-      )
+      logger.info(`update employee nickname: ${employeeId}: ${nickname}`)
     }
 
     if (

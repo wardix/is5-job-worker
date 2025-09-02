@@ -311,6 +311,7 @@ export async function fetchEngineers(): Promise<any> {
       SELECT EmpId employeeId, CONCAT(EmpFName, ' ', EmpLName) name, VisitCardUserId visitcardUserId
       FROM Employee
       WHERE NOT EmpJoinStatus = 'QUIT' AND DisplayBranchId = '020' AND DeptId = '34'
+        AND VisitCardUserId IS NOT NULL
     `
 
   const engineerMap: any = {}
