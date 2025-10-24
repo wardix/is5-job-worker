@@ -1,5 +1,5 @@
 import mysql, { Pool, RowDataPacket } from 'mysql2/promise'
-import { dbzMysqlConfig, nisMysqlConfig, zabbixMysqlConfig } from './config'
+import { dbzMysqlConfig, is5MysqlConfig, nisMysqlConfig, zabbixMysqlConfig } from './config'
 import logger from './logger'
 import { fetchVisitCards, sendWaNotification } from './api'
 import {
@@ -8,6 +8,7 @@ import {
 } from './nusawork'
 
 const nisMysqlPool: Pool = mysql.createPool(nisMysqlConfig)
+const is5MysqlPool: Pool = mysql.createPool(is5MysqlConfig)
 const zabbixMysqlPool: Pool = mysql.createPool(zabbixMysqlConfig)
 const dbzMysqlPool: Pool = mysql.createPool(dbzMysqlConfig)
 
@@ -78,6 +79,24 @@ export async function updateNisEmployeePhoneNumber(
     const errorMessage = (error as Error).message
     logger.error(
       `Error updating phone number for employeeId: ${employeeId} ${errorMessage}`,
+    )
+  }
+}
+
+export async function updateIs5EmployeeStatus(
+  employeeId: string,
+  isActive: number,
+): Promise<void> {
+  const sql = 'UPDATE users SET is_active = ? WHERE employee_id = ?'
+  try {
+    await is5MysqlPool.execute(sql, [isActive, employeeId])
+    logger.info(
+      `Employee status updated successfully for employeeId: ${employeeId}`,
+    )
+  } catch (error) {
+    const errorMessage = (error as Error).message
+    logger.error(
+      `Error updating status for employeeId: ${employeeId} ${errorMessage}`,
     )
   }
 }

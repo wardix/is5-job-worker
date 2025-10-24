@@ -9,6 +9,7 @@ import {
   fetchNisEmployeeStructs,
   updateNisEmployeestruct,
   updateNisEmployeeNickname,
+  updateIs5EmployeeStatus,
 } from './database'
 import {
   sendWaNotification,
@@ -28,13 +29,22 @@ import { getFiberstarHomepass } from './fiberstar'
 import { generateGamasMetrics } from './gamas-exporter'
 import { generateOverSpeedBlockedSubscriberMetrics } from './overspeed-exporter'
 import { generateNusacontactQueueMetrics } from './nusacontact-exporter'
+import { getIs5Employee } from './is5'
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
   const employees = await getAllEmployee(token)
+  const is5Employees = await getIs5Employee()
   const nisEmployeePhoneNumbers = await fetchNisEmployeePhoneNumbers()
   const nisEmployeeStructs = await fetchNisEmployeeStructs()
   const ignoredEmployees = JSON.parse(structureIgnoredEmployees)
+
+  is5Employees.forEach(async (employee: any) => {
+    const findEmployee = employees.find((e: any) => e.employee_id == employee.employee_id)
+    const isActive = (findEmployee) ? 1 : 0;
+    await updateIs5EmployeeStatus(employee.employee_id, isActive)
+      logger.info(`update is5 employee status: ${employee.employee_id}`)
+  });
 
   employees.forEach(async (employee: any) => {
     const {

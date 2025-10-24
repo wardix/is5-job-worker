@@ -24,12 +24,28 @@ export const visitCardToken = process.env.VISITCARD_TOKEN || ''
 
 export const silenceAlertApiUrl = process.env.SILENCE_ALERT_API_URL || ''
 
+export const is5EmployeeApiUrl =
+  process.env.IS5_EMPLOYEE_API_URL || ''
+
+export const is5ApiKey = process.env.IS5_API_KEY || ''
+
 export const nisMysqlConfig = {
   host: process.env.NIS_MYSQL_HOST,
   port: +(process.env.NIS_MYSQL_PORT || 3306),
   user: process.env.NIS_MYSQL_USER,
   password: process.env.NIS_MYSQL_PASSWORD,
   database: process.env.NIS_MYSQL_DB,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+}
+
+export const is5MysqlConfig = {
+  host: process.env.IS5_MYSQL_HOST,
+  port: +(process.env.IS5_MYSQL_PORT || 3306),
+  user: process.env.IS5_MYSQL_USER,
+  password: process.env.IS5_MYSQL_PASSWORD,
+  database: process.env.IS5_MYSQL_DB,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
