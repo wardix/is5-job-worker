@@ -22,6 +22,8 @@ export const visitCardSummaryApiUrl =
   process.env.VISITCARD_SUMMARY_API_URL || ''
 export const visitCardToken = process.env.VISITCARD_TOKEN || ''
 
+export const sentryDsn = process.env.SENTRY_DSN || ''
+
 export const silenceAlertApiUrl = process.env.SILENCE_ALERT_API_URL || ''
 
 export const nisMysqlConfig = {

@@ -5,6 +5,7 @@ import {
   fiberstarHomepassApiPassword,
   fiberstarHomepassApiUrl,
 } from './config'
+import * as Sentry from '@sentry/node';
 import logger from './logger'
 import {
   deleteFiberstarHomepass,
@@ -85,6 +86,7 @@ export async function getFiberstarHomepass() {
 
     await saveFiberstarConfig('last_request', JSON.stringify(cityConf))
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error.message, 'fetch homepass')
   }
 }
@@ -143,6 +145,7 @@ async function login(): Promise<any> {
     await saveFiberstarConfig(FiberstarConfigKeys.AUTH_TOKEN, result)
     return response.data.token
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error)
     return Promise.reject(error)
   }
@@ -154,6 +157,7 @@ async function getFiberstarCities(): Promise<any> {
     await saveFiberstarConfig(FiberstarConfigKeys.CITIES, cities.data.message)
     return cities.data.message
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error.message, 'cities')
     const localCities = await fetchFiberstarConfig(FiberstarConfigKeys.CITIES)
     if (localCities != undefined) {
@@ -173,6 +177,7 @@ async function getFiberstarHomepassType(): Promise<any> {
     )
     return homepassTypes.data.message
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error.message, 'homepass types')
     const localTypes = await fetchFiberstarConfig(
       FiberstarConfigKeys.HOMEPASS_TYPES,
@@ -251,6 +256,7 @@ async function getFiberstarHomepassDetails(body: any, page: number) {
       await getFiberstarHomepassDetails(body, page + 1)
     }
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error.message, 'homepass details')
   }
 }
@@ -301,6 +307,7 @@ async function getFiberstarUpdatedHomepass(body: any, page: number) {
       await getFiberstarUpdatedHomepass(body, page + 1)
     }
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error.message, 'updated homepass')
   }
 }
@@ -332,6 +339,7 @@ async function getFiberstarDeletedHomepass(body: any, page: number) {
       await getFiberstarDeletedHomepass(body, page + 1)
     }
   } catch (error: any) {
+    Sentry.captureException(error);
     console.log(error.message, 'deleted homepass')
   }
 }

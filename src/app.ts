@@ -15,6 +15,8 @@ import {
   submitSilenceAlert,
   syncNusacontactContact,
 } from './api'
+import * as Sentry from '@sentry/node';
+import { initSentry } from './sentry'
 import logger from './logger'
 import { structureIgnoredEmployees } from './config'
 import { formatContact } from './nusacontact'
@@ -28,6 +30,8 @@ import { getFiberstarHomepass } from './fiberstar'
 import { generateGamasMetrics } from './gamas-exporter'
 import { generateOverSpeedBlockedSubscriberMetrics } from './overspeed-exporter'
 import { generateNusacontactQueueMetrics } from './nusacontact-exporter'
+
+initSentry()
 
 async function synchronizeEmployeeData(): Promise<void> {
   const token = await fetchNusaworkAuthToken()
@@ -201,6 +205,7 @@ export async function executeJob(jobData: any): Promise<void> {
       break
 
     default:
+      Sentry.captureMessage(`Unknown job name: ${jobData.name}`)
       logger.warn(`Unknown job name: ${jobData.name}`)
       break
   }
