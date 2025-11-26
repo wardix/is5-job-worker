@@ -8,6 +8,7 @@ import {
   nusacontactQueueMetricFilePath,
   nusacontactQueueMetricName,
 } from './config'
+import * as Sentry from '@sentry/node';
 import { parseAttributes } from './utils'
 
 // Define interfaces
@@ -66,6 +67,7 @@ export async function generateNusacontactQueueMetrics() {
     fs.renameSync(tempFilePath, nusacontactQueueMetricFilePath)
     fs.rmdirSync(tempDirectoryPath)
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Failed to retrieve or parse data:', error)
   }
 }

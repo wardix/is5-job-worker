@@ -5,6 +5,7 @@ import {
   nusaworkAuthTokenApiUrl,
   nusaworkEmployeeApiUrl,
 } from './config'
+import * as Sentry from '@sentry/node';
 import logger from './logger'
 import { formatPhoneNumber } from './utils'
 
@@ -40,6 +41,7 @@ export async function getAllEmployee(token: string) {
     })
     return response.data.data.list
   } catch (error: any) {
+    Sentry.captureException(error);
     logger.warning(`Error get all employee: ${error.message}`)
   }
 }

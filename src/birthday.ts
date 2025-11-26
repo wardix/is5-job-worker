@@ -10,6 +10,7 @@ import {
   birthdayWishes,
 } from './config'
 import { sendWaNotification, sendWaNotificationImage } from './api'
+import * as Sentry from '@sentry/node';
 import logger from './logger'
 import { fetchNusaworkAuthToken, getAllEmployee } from './nusawork'
 
@@ -70,6 +71,7 @@ export async function sendGiftVoucherToBirthdayEmployees() {
       }
     }
   } catch (error: any) {
+    Sentry.captureException(error)
     logger.warning(`Error send gift voucher ${error.message}`)
   }
 }
@@ -161,6 +163,7 @@ export async function sendNotificationNextWeekBirthdayEmployees() {
       })
     })
   } catch (error: any) {
+    Sentry.captureException(error)
     logger.warning(
       `Error get employees with birthday next week: ${error.message}`,
     )
@@ -241,6 +244,7 @@ export async function createBirthdayVoucherGift(
     // Save the buffer to a file
     await fs.writeFile(outputPath, buffer)
   } catch (error: any) {
+    Sentry.captureException(error)
     logger.warning(`Error processing image: ${error.message}`)
   }
 }

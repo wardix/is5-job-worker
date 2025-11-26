@@ -1,16 +1,31 @@
 import * as winston from 'winston'
+import * as Sentry from '@sentry/node';
+import Transport from 'winston-transport';
+import { initSentry, setupUnhandledExceptionHandlers } from './sentry';
+
+// Initialize Sentry and setup exception handlers
+initSentry();
+setupUnhandledExceptionHandlers();
+
+const SentryWinstonTransport = Sentry.createSentryWinstonTransport(Transport, {
+  levels: ['error', 'warn'],
+});
 
 const logger: winston.Logger = winston.createLogger({
   level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss',
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss',
+        }),
+        winston.format.printf(
+          (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+        ),
+      ),
     }),
-    winston.format.printf(
-      (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-    ),
-  ),
-  transports: [new winston.transports.Console()],
+    new SentryWinstonTransport(),
+  ],
 })
 
 export default logger

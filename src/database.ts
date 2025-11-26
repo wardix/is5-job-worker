@@ -1,5 +1,6 @@
 import mysql, { Pool, RowDataPacket } from 'mysql2/promise'
 import { dbzMysqlConfig, is5MysqlConfig, nisMysqlConfig, zabbixMysqlConfig } from './config'
+import * as Sentry from '@sentry/node'
 import logger from './logger'
 import { fetchVisitCards, sendWaNotification } from './api'
 import {
@@ -46,6 +47,7 @@ export async function updateNisEmployeestruct(
       `Employee struct updated successfully for employeeId: ${employeeId}`,
     )
   } catch (error) {
+    Sentry.captureException(error);
     const errorMessage = (error as Error).message
     logger.error(
       `Error updating employee struct for employeeId: ${employeeId} ${errorMessage}`,
@@ -76,6 +78,7 @@ export async function updateNisEmployeePhoneNumber(
       `Employee phone number updated successfully for employeeId: ${employeeId}`,
     )
   } catch (error) {
+    Sentry.captureException(error);
     const errorMessage = (error as Error).message
     logger.error(
       `Error updating phone number for employeeId: ${employeeId} ${errorMessage}`,
@@ -112,6 +115,7 @@ export async function updateNisEmployeeNickname(
       `Employee nickname updated successfully for employeeId: ${employeeId}`,
     )
   } catch (error) {
+    Sentry.captureException(error);
     const errorMessage = (error as Error).message
     logger.error(
       `Error updating nickname for employeeId: ${employeeId} ${errorMessage}`,
@@ -309,6 +313,7 @@ export async function deleteNisGraphs(graphIds: number[]): Promise<void> {
     await nisMysqlPool.execute(sql)
     logger.info('Dead graphs deleted successfully')
   } catch (error) {
+    Sentry.captureException(error);
     const errorMessage = (error as Error).message
     logger.error(`Error deleting dead graphs ${errorMessage}`)
   }
@@ -652,6 +657,7 @@ export async function saveFiberstarConfig(
     await nisMysqlPool.execute(query, [key, '020', JSON.stringify(value)])
     logger.info(`Fiberstar config ${key} saved successfully`)
   } catch (error) {
+    Sentry.captureException(error);
     logger.error(`Error saving fiberstar config ${key}`)
   }
 }
@@ -692,6 +698,7 @@ export async function saveFiberstarHomepass(
     await nisMysqlPool.execute(query, params)
     logger.info('Homepass saved successfully')
   } catch (error: any) {
+    Sentry.captureException(error);
     logger.error(error.message, 'failed save homepass')
   }
 }
@@ -734,6 +741,7 @@ export async function updateFiberstarHomepass(
     await nisMysqlPool.execute(query, params)
     logger.info('Homepass updated successfully')
   } catch (error: any) {
+    Sentry.captureException(error)
     console.log(error.message, 'update homepass')
   }
 }
@@ -749,6 +757,7 @@ export async function deleteFiberstarHomepass(
     await nisMysqlPool.execute(query, [vendor, code, type])
     logger.info('Homepass deleted successfully')
   } catch (error: any) {
+    Sentry.captureException(error)
     console.log(error.message, 'delete homepass')
   }
 }
@@ -769,6 +778,7 @@ export async function fetchFiberstarHomepass(
     const data = rows[0]
     return data.id
   } catch (error: any) {
+    Sentry.captureException(error)
     logger.error(error.message, 'failed fetch homepass')
   }
   return 0
