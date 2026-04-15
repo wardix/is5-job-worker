@@ -178,7 +178,7 @@ export async function createBirthdayVoucherGift(
 ): Promise<void> {
   try {
     const textNameAreaX = 4
-    const textNameAreaY = 484
+    const textNameAreaY = 460
     const textNameAreaWidth = 736
     const textNameAreaHeight = 100
     const textNameFontSize = 68
@@ -186,7 +186,7 @@ export async function createBirthdayVoucherGift(
     const textEndPeriodX = 68
     const textEndPeriodY = 1020
     const textEndPeriodWidth = 398
-    const textEndPeriodFontSize = 28
+    const textEndPeriodFontSize = 32
 
     const formatedEndPeriodDate = endPeriodDate.toLocaleString('id-ID', {
       year: 'numeric',
